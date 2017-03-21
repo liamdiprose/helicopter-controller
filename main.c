@@ -12,10 +12,28 @@
 
 #define PART_TM4C123GH6PM
 
+// Interrupts
+// User inputs
+// Quadrature Signals
+
 int main(void) {
 	
+	// Initialise Stuff
+	// Calibration
 
+	while (1) {
+		// Copy current height from ADC
+		// Copy quadrature signals, calculate new location
 
+		// Update target height
+		// Update target yaw
+
+		// Update the new PWM to send to Head Rotor
+		// Update the PWM to send to the Tail Rotor
+
+		// Update Display (skip updating every X ticks instead)
+		// Send status to UART (skip updating every X ticks)
+	}
 
 	return 0;
 }
