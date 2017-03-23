@@ -1,29 +1,35 @@
 
-// Create a PWM output handler
-PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
+#include "pwm.h"
 
-		PWMGenConfigure(addr_base, clk_gen, 
-						PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
+
+// Create a PWM output handler
+PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit){
+
+		PWMGenConfigure(addr_base, clk_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 
 		PWMGenEnable(addr_base, clk_gen);
-		PWMOutputState(addr_base, outbit, true);
 
-		// Return struct for handling this PWM output 
-		return {
+		PWMOut new_pwm_out = {
 				.base = addr_base,
 				.gen = clk_gen,
 				.out = out,
 				.outbit = outbit,
-				.frequency = 150,
-				.duty_cycle = 0.5
 		};
+
+		pwm_frequency_set(&new_pwm_out, 150);
+		pwm_duty_cycle_set(&new_pwm_out, 0.5);
+
+		PWMOutputState(addr_base, outbit, true);
+
+		// Return struct for handling this PWM output
+		return new_pwm_out;
 }
 
 // Set the duty cycle of the pwm output
 int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle) {
-		uint32_t pulse_width = SysCtlClockGet() / PWM_DIVIDER / pwm->frequency;
+		//uint32_t pulse_width = SysCtlClockGet() / 4 / pin->frequency;
 
-		PWMPulseWidthSet(pwm->base, pwm->out, pulse_width);
+		PWMPulseWidthSet(pin->base, pin->out, pin->period * duty_cycle);
 
 		pin->duty_cycle = duty_cycle;
 		return 0;
@@ -31,11 +37,11 @@ int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle) {
 
 // Set the frequncy of the pwm output
 int pwm_frequency_set(PWMOut* pin, int frequency) {
-		uint32_t period = SysCtlClockGet() / PWM_DIVIDER / frequency;
+		uint32_t period = SysCtlClockGet() / 4 / frequency;
 
-		PWMGenPeriodSet(pin->base, pwm->gen, period);
+		PWMGenPeriodSet(pin->base, pin->gen, period);
 
-		pin->frequency = frequency;
+		pin->period = period;
 		return 0;
 }
 

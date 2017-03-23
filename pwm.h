@@ -9,6 +9,12 @@
 #define PWM_H_
 
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "driverlib/sysctl.h"
+#include "driverlib/gpio.h"
+#include "driverlib/pwm.h"
 
 
 #define DEFAULT_FREQUENCY 150
@@ -18,7 +24,8 @@ typedef struct pwmout_s {
 	uint32_t base;
 	uint32_t gen;
 	uint32_t out;
-	uint32_t frequency;
+	uint32_t outbit;
+	uint32_t period;
 	float duty_cycle;
 } PWMOut;
 
@@ -26,9 +33,9 @@ typedef struct pwmout_s {
 PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
 
 // Set the duty cycle of the pwm output
-int pwm_duty_cycle_set(PWMOut pin, float duty_cycle);
+int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle);
 
 // Set the frequncy of the pwm output
-int pwm_frequency_set(PWMOut pin, int frequency);
+int pwm_frequency_set(PWMOut* pin, int frequency);
 
 #endif /* PWM_H_ */
