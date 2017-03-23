@@ -18,12 +18,13 @@ typedef struct button_s {
 	uint32_t gpio_base;
 	uint32_t gpio_pin;
 	uint32_t last_pressed;
+	uint32_t last_accepted;
 } Button;
 
 // Create a button struct
 Button button_init(uint32_t gpio_base, uint32_t gpio_pin);
 
 // Return true if the button was pressed. False if it is a bounce.
-bool button_pressed(Button button);
+bool button_pressed(Button* button);
 
 #endif /* BUTTON_H_ */

@@ -33,6 +33,6 @@ int pid_derivative_set(PIDConfig* config, float KD);
 int pid_target_set(PIDConfig* config, float target);
 
 // Calculate new value from PID controller
-float pid_update(PIDConfig config, float current);
+float pid_update(PIDConfig config, uint32_t current);
 
 #endif /* PID_H_ */

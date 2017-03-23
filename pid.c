@@ -4,7 +4,7 @@
  *  Created on: Mar 23, 2017
  *      Author: ldi30
  */
-
+#include <stdint.h>
 
 #include "pid.h"
 
@@ -38,7 +38,7 @@ int pid_target_set(PIDConfig* config, float target) {
 }
 
 // Calculate new value from PID controller
-float pid_update(PIDConfig config, float current) {
+float pid_update(PIDConfig config, uint32_t current) {
 	// TODO: Just return the target value for now...
 	return config.target;
 }

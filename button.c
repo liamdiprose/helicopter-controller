@@ -14,13 +14,17 @@ Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {
 	// Configure pin to be pull up (button will short to ground when pressed)
 	GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 
-	Button new_button = {gpio_base, gpio_pin, 0};
+	Button new_button = {gpio_base, gpio_pin, 0, 0};
 
 	return new_button;
 }
 
 // Return true if the button was pressed. False if it is a bounce.
-bool button_pressed(Button button) {
-		uint32_t clock = SysCtlClockGet();
-		return button.last_pressed + clock * BUTTON_DEBOUNCE_TIMEOUT / 4000 > clock;
+bool button_pressed(Button* button) {
+		if (button->last_pressed > button->last_accepted + BUTTON_DEBOUNCE_TIMEOUT) {
+			button->last_accepted = button->last_pressed;
+			return true;
+		} else {
+			return false;
+		}
 }
