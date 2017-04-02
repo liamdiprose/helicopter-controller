@@ -8,16 +8,30 @@
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#define BUTTON_DEBOUNCE_TIMEOUT 200
+#define SEQ_READS_UP 3
+#define SEQ_READS_DOWN 5
+
 typedef struct button_s {
 	uint32_t gpio_base;
 	uint32_t gpio_pin;
-	int last_pressed;
+	uint32_t num_seq_reads;
+	bool butt_state;
+	bool task_state;
 } Button;
 
-// Create a button struct
-Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {
+Button buttons[2];
 
-// Return true if the button was pressed. False if it is a bounce.
-bool button_pressed(Button button, int time);
+// Check all the buttons in the global list buttons, handling their state changes
+void button_check(void);
+
+// Create a button struct
+Button button_init(uint32_t gpio_base, uint32_t gpio_pin);
+
+
 
 #endif /* BUTTON_H_ */
