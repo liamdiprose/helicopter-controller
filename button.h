@@ -16,6 +16,9 @@
 #define SEQ_READS_UP 3
 #define SEQ_READS_DOWN 5
 
+#define BUTTON_UP 0
+#define BUTTON_DOWN 1
+
 typedef struct button_s {
 	uint32_t gpio_base;
 	uint32_t gpio_pin;
@@ -32,6 +35,7 @@ void button_check(void);
 // Create a button struct
 Button button_init(uint32_t gpio_base, uint32_t gpio_pin);
 
-
+// Return true if the button has been pressed
+bool button_pressed(Button* btn);
 
 #endif /* BUTTON_H_ */
