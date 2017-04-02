@@ -93,13 +93,13 @@ int main(void) {
 
 
 	// Initialise buttons into global array
-	alt_buttons[BUTTON_UP] = button_init(GPIO_PORTD_BASE, GPIO_PIN_2);
-	alt_buttons[BUTTON_DOWN] = button_init(GPIO_PORTE_BASE, GPIO_PIN_0);
+	alt_buttons[BUTTON_ALT_UP] = button_init(GPIO_PORTF_BASE, GPIO_PIN_0);
+	alt_buttons[BUTTON_ALT_DOWN] = button_init(GPIO_PORTF_BASE, GPIO_PIN_4);
 
-	SysTickPeriodSet(160000);
+	SysTickPeriodSet(SysCtlClockGet()/100);
 	SysTickEnable();
 	SysTickIntEnable();
-	SysTickIntRegister(*button_check);
+	SysTickIntRegister(button_check);
 
 	// Enable Timer for getting time inbetween button presses
 	TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC_UP);
@@ -173,11 +173,11 @@ int main(void) {
 
 
 		// Update target Altitude and Yaw if respective button was pressed
-		if (button_pressed(&alt_buttons[BUTTON_UP])) {
+		if (button_read(&alt_buttons[BUTTON_ALT_UP])) {
 			//pid_target_set(&pid_alt, pid_alt.target + 0.15);
 			pwm_duty_cycle_set(&alt_output, alt_output.duty_cycle + 0.05);
 		}
-		if (button_pressed(&alt_buttons[BUTTON_DOWN])) {
+		if (button_read(&alt_buttons[BUTTON_ALT_DOWN])) {
 			//pid_target_set(&pid_alt, pid_alt.target - 0.15);
 			pwm_duty_cycle_set(&alt_output, alt_output.duty_cycle - 0.05);
 		}
