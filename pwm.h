@@ -38,4 +38,7 @@ int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle);
 // Set the frequncy of the pwm output
 int pwm_frequency_set(PWMOut* pin, uint32_t frequency);
 
+
+
+
 #endif /* PWM_H_ */
