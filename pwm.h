@@ -36,6 +36,6 @@ PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t out
 int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle);
 
 // Set the frequncy of the pwm output
-int pwm_frequency_set(PWMOut* pin, int frequency);
+int pwm_frequency_set(PWMOut* pin, uint32_t frequency);
 
 #endif /* PWM_H_ */

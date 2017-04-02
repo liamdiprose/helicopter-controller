@@ -46,6 +46,7 @@
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.DIAG_WRAP.664310621" name="Wrap diagnostic messages (--diag_wrap)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.DIAG_WRAP" value="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.DIAG_WRAP.off" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.INCLUDE_PATH.389408494" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.INCLUDE_PATH" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${CG_TOOL_ROOT}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\ti\TivaWare_C_Series-2.1.3.156\utils&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\ti\TivaWare_C_Series-2.1.3.156&quot;"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.LITTLE_ENDIAN.804222324" name="Little endian code [See 'General' page to edit] (--little_endian, -me)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.LITTLE_ENDIAN" value="true" valueType="boolean"/>
@@ -78,6 +79,26 @@
 							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.hex.1574646550" name="ARM Hex Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.hex"/>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.1694495825.1762640880" name="/" resourcePath="lib_OrbitOled">
+						<toolChain id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.DebugToolchain.334342454" name="TI Build Tools" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.DebugToolchain" unusedChildren="">
+							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.1230440152.1769875280" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_TAGS.1230440152"/>
+							<option id="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.1819663872.115804282" name="Compiler version" superClass="com.ti.ccstudio.buildDefinitions.core.OPT_CODEGEN_VERSION.1819663872"/>
+							<targetPlatform id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.targetPlatformDebug" name="Platform" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.targetPlatformDebug"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.compilerDebug.804819840" name="ARM Compiler" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.compilerDebug.1856772952">
+								<option id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.INCLUDE_PATH.112943520" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compilerID.INCLUDE_PATH" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${CG_TOOL_ROOT}/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/lib_OrbitOled}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\ti\TivaWare_C_Series-2.1.3.156&quot;"/>
+								</option>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__C_SRCS.21460193" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__C_SRCS"/>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__CPP_SRCS.1376954657" name="C++ Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__CPP_SRCS"/>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__ASM_SRCS.1903098410" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__ASM_SRCS"/>
+								<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__ASM2_SRCS.1175335773" name="Assembly Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__ASM2_SRCS"/>
+							</tool>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.linkerDebug.1930920046" name="ARM Linker" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.linkerDebug.1274052184"/>
+							<tool id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.hex.772012273" name="ARM Hex Utility" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.hex.1574646550"/>
+						</toolChain>
+					</folderInfo>
 					<fileInfo id="com.ti.ccstudio.buildDefinitions.TMS470.Debug.1694495825.1140704858" name="main.c" rcbsApplicability="disable" resourcePath="main.c" toolsToInvoke="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.compilerDebug.1856772952.563271919">
 						<tool id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.compilerDebug.1856772952.563271919" name="ARM Compiler" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.exe.compilerDebug.1856772952">
 							<inputType id="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__C_SRCS.196922671" name="C Sources" superClass="com.ti.ccstudio.buildDefinitions.TMS470_15.12.compiler.inputType__C_SRCS"/>
@@ -101,7 +122,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="Waveform_analysis_with_OLED.c|OrbitOLEDInterface.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Waveform_analysis_with_OLED.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

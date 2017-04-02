@@ -36,10 +36,11 @@ int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle) {
 }
 
 // Set the frequncy of the pwm output
-int pwm_frequency_set(PWMOut* pin, int frequency) {
-		uint32_t period = SysCtlClockGet() / 4 / frequency;
+int pwm_frequency_set(PWMOut* pin, uint32_t frequency) {
+		uint32_t period =  SysCtlClockGet() / 8 / frequency;
 
 		PWMGenPeriodSet(pin->base, pin->gen, period);
+		PWMPulseWidthSet(pin->base, pin->out, period * pin->duty_cycle);
 
 		pin->period = period;
 		return 0;

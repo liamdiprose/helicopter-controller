@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 
+
 //*****************************************************************************
 //
 // Forward declaration of the default fault handlers.
@@ -55,8 +56,9 @@ extern uint32_t __STACK_TOP;
 //
 //*****************************************************************************
 // To be added by user
-
 //*****************************************************************************
+#include "pwmcounter.h"
+__attribute__((weak)) void pwmcounter_isr(void);
 //
 // The vector table.  Note that the proper constructs must be placed on this to
 // ensure that it ends up at physical address 0x0000.0000 or at the start of
@@ -106,8 +108,8 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Timer 0 subtimer B
     IntDefaultHandler,                      // Timer 1 subtimer A
     IntDefaultHandler,                      // Timer 1 subtimer B
-    IntDefaultHandler,                      // Timer 2 subtimer A
-    IntDefaultHandler,                      // Timer 2 subtimer B
+	IntDefaultHandler,                      // Timer 2 subtimer A
+	pwmcounter_isr,                      // Timer 2 subtimer B
     IntDefaultHandler,                      // Analog Comparator 0
     IntDefaultHandler,                      // Analog Comparator 1
     IntDefaultHandler,                      // Analog Comparator 2

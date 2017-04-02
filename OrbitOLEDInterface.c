@@ -21,6 +21,8 @@
 #include "lib_OrbitOled/OrbitOledChar.h"
 #include "lib_OrbitOled/OrbitOledGrph.h"
 
+#include "utils/ustdlib.c"
+
 //*****************************************************************************
 //
 //!
