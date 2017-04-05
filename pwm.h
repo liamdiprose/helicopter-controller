@@ -26,14 +26,14 @@ typedef struct pwmout_s {
 	uint32_t out;
 	uint32_t outbit;
 	uint32_t period;
-	float duty_cycle;
+	uint8_t duty_cycle;
 } PWMOut;
 
 // Create a PWM output handler
 PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
 
 // Set the duty cycle of the pwm output
-int pwm_duty_cycle_set(PWMOut* pin, float duty_cycle);
+int pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle);
 
 // Set the frequncy of the pwm output
 int pwm_frequency_set(PWMOut* pin, uint32_t frequency);

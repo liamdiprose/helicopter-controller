@@ -21,25 +21,26 @@
 // #define BUTTON_YAW_UP 2
 // #define BUTTON_YAW_DOWN 3
 
-#define BUTTON_STATE_PRESSED true
-#define BUTTON_STATE_RELEASED false
-
+#define BUTTON_STATE_PRESSED 1
+#define BUTTON_STATE_RELEASED 0
 
 #define BUTTON_CHECK_MS 10		  // TODO: Change
 #define BUTTON_PRESS_THRES_MS 200
-#define BUTTON_COUNT_START 20
+#define BUTTON_COUNT_START 2
 
 
 typedef struct button_s {
 	uint32_t gpio_base;
 	uint32_t gpio_pin;
-	bool new_state;  // What is the counter trying to validate
+	char new_state;  // What is the counter trying to validate
 	uint32_t count;
-	bool state;     // Current state of button
-	bool updated;      // Has current state been read yet? 
+	char state;     // Current state of button
+	char updated;      // Has current state been read yet?
 } Button;
 
-Button buttons[2];
+
+Button buttons[BUTTON_NUM];
+
 
 // Check all the buttons in the global list buttons, handling their state changes
 void button_check(void);

@@ -8,27 +8,36 @@
 
 
 
-Button BUTTONS[BUTTON_NUM];
-
 // Create a button struct
 Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {
+	// Configure pin to be pull down (button will be high when pressed)
+	GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
 
 	// Configure input to be GPIO
 	GPIOPinTypeGPIOInput(gpio_base, gpio_pin);
-	// Configure pin to be pull up (button will short to ground when pressed)
-	GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 
-	Button new_button = {
-			.gpio_base = gpio_base,
-			.gpio_pin = gpio_pin,
-			.new_state = false,
-			.count = BUTTON_COUNT_START,
-			.state = false,
-			.updated = false
-	};
+
+
+	Button new_button = {gpio_base, gpio_pin, false, BUTTON_COUNT_START, false, false};
 
 	return new_button;
 }
+
+
+//void button_check(void) {
+//	int i;
+//	Button* current_button;
+//	for (i = 0; i < BUTTON_NUM; i++) {
+//			current_button = &buttons[i];
+//			if (GPIOPinRead(current_button->gpio_base, current_button->gpio_pin) > 0) {
+//				current_button->state = 'b';
+//				current_button->updated = 1;
+//			} else {
+//				current_button->state = 0;
+//				current_button->updated = 0;
+//			}
+//	}
+//}
 
 void button_check(void) {
 	uint32_t i;
@@ -36,18 +45,18 @@ void button_check(void) {
 	bool current_pin_state;
 
 	for (i = 0; i < BUTTON_NUM; i++) {
-		current_button = &BUTTONS[i];
+		current_button = &buttons[i];
 		// Ignore button if it is nothing
 		if (current_button == NULL) {
 			continue;
 		}
-		current_pin_state = GPIOPinRead(current_button->gpio_base, current_button->gpio_pin) > 1;
+		current_pin_state = GPIOPinRead(current_button->gpio_base, current_button->gpio_pin) > 0;
 		if (current_pin_state == BUTTON_STATE_PRESSED) {
 			if (current_button->new_state == BUTTON_STATE_PRESSED) {
 				if (current_button->count > 0) {
 					current_button->count--;
 				}
-			} else { 
+			} else {
 				current_button->new_state = BUTTON_STATE_PRESSED;
 				current_button->count = BUTTON_COUNT_START;
 			}
@@ -56,7 +65,7 @@ void button_check(void) {
 				if (current_button->count > 0) {
 					current_button->count--;
 				}
-			} else { 
+			} else {
 				current_button->new_state = BUTTON_STATE_RELEASED;
 				current_button->count = BUTTON_COUNT_START;
 			}
@@ -64,7 +73,7 @@ void button_check(void) {
 		// If the count expires, the new_state is accepted, if it has changed
 		if (current_button->count == 0 && (current_button->state != current_button->new_state)) {
 			current_button->state = current_button->new_state;
-			current_button->updated = true;
+			current_button->updated = 1;
 		}
 	}
 }

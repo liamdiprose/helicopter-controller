@@ -47,9 +47,6 @@
 // Quadrature Signals
 
 
-Button alt_buttons[2];
-
-
 int freq_cap(uint32_t new_freq, uint32_t old_freq) {
 	if (new_freq == 0) {
 		return 150;
@@ -61,7 +58,6 @@ int freq_cap(uint32_t new_freq, uint32_t old_freq) {
 		return 0.5 * new_freq + 0.5 * old_freq;
 	}
 }
-
 
 int main(void) {
 	
@@ -79,6 +75,8 @@ int main(void) {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); // TivaBoard Buttons
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
 
+	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5));
+	SysCtlDelay(9);  // Test: wait for
 
 	// Enable PWM Module to generate PWM outputs
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
@@ -93,8 +91,8 @@ int main(void) {
 
 
 	// Initialise buttons into global array
-	alt_buttons[BUTTON_ALT_UP] = button_init(GPIO_PORTF_BASE, GPIO_PIN_0);
-	alt_buttons[BUTTON_ALT_DOWN] = button_init(GPIO_PORTF_BASE, GPIO_PIN_4);
+	buttons[BUTTON_ALT_UP] = button_init(GPIO_PORTE_BASE, GPIO_PIN_0);
+	buttons[BUTTON_ALT_DOWN] = button_init(GPIO_PORTD_BASE, GPIO_PIN_2);
 
 	SysTickPeriodSet(SysCtlClockGet()/100);
 	SysTickEnable();
@@ -149,10 +147,13 @@ int main(void) {
 
 	uint32_t duty_cycle = 0;
 
-	pid_target_set(&pid_alt, 0.50);
+	pid_target_set(&pid_alt, 50);
 	while (1) {
 		// Copy current height from ADC
 		// Calculate rotational position from Quadrature interrupt inputs 
+
+
+		bool test = GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0) > 1;
 
 
 		// Test Timer is working
@@ -173,13 +174,17 @@ int main(void) {
 
 
 		// Update target Altitude and Yaw if respective button was pressed
-		if (button_read(&alt_buttons[BUTTON_ALT_UP])) {
+		if (button_read(&buttons[BUTTON_ALT_UP])) {
 			//pid_target_set(&pid_alt, pid_alt.target + 0.15);
-			pwm_duty_cycle_set(&alt_output, alt_output.duty_cycle + 0.05);
+			if (alt_output.duty_cycle < 95) {
+				pwm_duty_cycle_set(&alt_output, alt_output.duty_cycle + 5);
+			}
 		}
-		if (button_read(&alt_buttons[BUTTON_ALT_DOWN])) {
+		if (button_read(&buttons[BUTTON_ALT_DOWN])) {
 			//pid_target_set(&pid_alt, pid_alt.target - 0.15);
-			pwm_duty_cycle_set(&alt_output, alt_output.duty_cycle - 0.05);
+			if (alt_output.duty_cycle > 5) {
+				pwm_duty_cycle_set(&alt_output, alt_output.duty_cycle - 5);
+			}
 		}
 		/*
 		if (button_pressed(button_yaw_up, current_time)) {
@@ -202,8 +207,8 @@ int main(void) {
 		// Update Display (skip updating every X ticks instead)
 		//display_print(string);
 		usprintf(oled_freq, "f : %3d", freq);
-		duty_cycle = alt_output.duty_cycle * 100;
-		usprintf(oled_dc, "dc: %3d", duty_cycle);
+		duty_cycle = alt_output.duty_cycle;
+		usprintf(oled_dc, "dc: %3d%%", duty_cycle);
 		OLEDStringDraw(oled_freq, 0, 0);
 		OLEDStringDraw(oled_dc, 0, 1);
 
