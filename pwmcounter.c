@@ -21,10 +21,10 @@ void pwmcounter_init() {
 
 	//TimerConfigure(TIMER2_BASE, TIMER_CFG_B_ONE_SHOT);
 	TimerConfigure(PWMCOUNTER_BASE, (TIMER_CFG_SPLIT_PAIR | TIMER_CFG_A_CAP_COUNT | TIMER_CFG_B_PERIODIC));
-	TimerPrescaleSet(PWMCOUNTER_BASE, TIMER_B, 100000);  //
+	TimerPrescaleSet(PWMCOUNTER_BASE, TIMER_B, 255);  //
 
 	TimerLoadSet(PWMCOUNTER_BASE, TIMER_A, PWMCOUNTER_COUNT_START);
-	TimerLoadSet(PWMCOUNTER_BASE, TIMER_B, 65530);
+	TimerLoadSet(PWMCOUNTER_BASE, TIMER_B, 65534);
 	TimerControlEvent(PWMCOUNTER_BASE, TIMER_A, TIMER_EVENT_POS_EDGE);
 	TimerIntRegister(PWMCOUNTER_BASE, TIMER_B, pwmcounter_isr);
 	TimerIntEnable(PWMCOUNTER_BASE, TIMER_TIMB_TIMEOUT);
@@ -38,6 +38,6 @@ void pwmcounter_init() {
 // Get last recorded frequency
 uint32_t pwmcounter_freq_get(void) {
 	// TODO: Adjust return frequency
-	return 7.9 * (PWMCOUNTER_COUNT_START - pwmcounter_count);
+	return 5 * (PWMCOUNTER_COUNT_START - pwmcounter_count);
 }
 

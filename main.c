@@ -24,6 +24,7 @@
 #include "pwm.h"
 #include "pid.h"
 #include "pwmcounter.h"
+#include "quad_encoder.h"
 
 #define PWM_INPUT_THRESHOLD 10
 
@@ -51,11 +52,11 @@ int freq_cap(uint32_t new_freq, uint32_t old_freq) {
 	if (new_freq == 0) {
 		return 150;
 	} else if (new_freq < 100) {
-		return 100;
+		return 150;
 	} else if (new_freq > 300) {
-		return 300;
+		return 150;
 	} else {
-		return 0.5 * new_freq + 0.5 * old_freq;
+		return new_freq;
 	}
 }
 
@@ -66,21 +67,22 @@ int main(void) {
 	uint32_t clock = SysCtlClockGet();
 	SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
 	PIDConfig pid_alt = {.P = 1, .I = 0, .D = 0 };
-	PIDConfig pid_yaw = {.P = 1, .I = 0, .D = 0 };
+	//PIDConfig pid_yaw = {.P = 1, .I = 0, .D = 0 };
 
 	// Enable GPIO Input and Output
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB); // quadrature encoder
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);   // PWM Main Rotor
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // BTN1 on PIN2
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE); // BTN2 on PIN0
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF); // TivaBoard Buttons
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
 
-	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER5));
-	SysCtlDelay(9);  // Test: wait for
 
 	// Enable PWM Module to generate PWM outputs
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
 
+	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_PWM0));
+		SysCtlDelay(9);  // Test: wait for
 
 	PWMOut alt_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_7, PWM_OUT_7_BIT);
 	// Set PC5 output to be PWM
@@ -89,11 +91,11 @@ int main(void) {
 	GPIOPinConfigure(GPIO_PC5_M0PWM7);
 
 
-
 	// Initialise buttons into global array
 	buttons[BUTTON_ALT_UP] = button_init(GPIO_PORTE_BASE, GPIO_PIN_0);
 	buttons[BUTTON_ALT_DOWN] = button_init(GPIO_PORTD_BASE, GPIO_PIN_2);
 
+	// initialise timer for checking buttons
 	SysTickPeriodSet(SysCtlClockGet()/100);
 	SysTickEnable();
 	SysTickIntEnable();
@@ -103,24 +105,26 @@ int main(void) {
 	TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC_UP);
 	TimerEnable(TIMER5_BASE, TIMER_BOTH);
 
-	// Configure a different timer to count PWM pulses
-	// Enable Timer Module to count PWM
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
-
-	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER3));
-	SysCtlDelay(3);  // Test: wait for timer to be ready
-
-
-
-	// Enable Systick to check buttons
-
-
 
 	// Enable Pin to connect to timer
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 	GPIOPinTypeTimer(GPIO_PORTB_BASE, GPIO_PIN_2);
-	//GPIOPinConfigure(GPIO_PB0_T2CCP0);
-	GPIOPinConfigure(GPIO_PB2_T3CCP0);
+	//GPIOPinConfigure(GPIO_PB0_T2CCP0); // correct pint
+	GPIOPinConfigure(GPIO_PB2_T3CCP0); // liams broken pin workaround
+
+
+	//enables for the quadrature encoding
+	//
+	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_0);
+	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_1);
+	//Add the interrupt to the table
+	GPIOIntRegister(GPIO_PORTB_BASE, quad_measure);
+	// Set the interrupt to trigger on both edges
+	GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
+	GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
+	// initialises values, in the quad_encoder file
+	quad_init();
+
+
 
 	pwmcounter_init();
 
@@ -131,36 +135,31 @@ int main(void) {
 	//PWMOut yaw_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, 150, 0.5);
 
 	// Declear variables that hold sensor input
-	uint32_t current_alt = 0; //TODO
-	uint32_t current_yaw = 0;
+	uint32_t current_alt = 0;
 
 	// Declear variables that hold calculated duty cycles
 	float new_alt_dc = 0;
 	float old_alt_dc = 0;
-	uint32_t new_yaw_dc = 0;
 
 
-	uint32_t saved_pwm_pulses;
 	uint32_t freq = 1;
 
 	uint32_t last_accepted_freq = 0;
-
 	uint32_t duty_cycle = 0;
 
 	pid_target_set(&pid_alt, 50);
+
+
+
 	while (1) {
 		// Copy current height from ADC
 		// Calculate rotational position from Quadrature interrupt inputs 
-
-
-		bool test = GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_0) > 1;
-
 
 		// Test Timer is working
 		//uint32_t time = TimerValueGet(TIMER3_BASE, TIMER_B);
 //		uint32_t pwm = TimerValueGet(TIMER2_BASE, TIMER_A);
 
-		saved_pwm_pulses = freq;
+		//saved_pwm_pulses = freq; //TODO
 		freq = freq_cap(pwmcounter_freq_get(), freq);
 
 
@@ -169,7 +168,6 @@ int main(void) {
 			// PWM input has changed, update to new frequency
 			pwm_frequency_set(&alt_output, freq);
 			last_accepted_freq = freq;
-
 		}
 
 
