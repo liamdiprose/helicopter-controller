@@ -13,10 +13,9 @@
 #include "driverlib/uart.h"
 #include "driverlib/systick.h"
 #include "inc/hw_memmap.h"
-//#include "inc/hw_ints.h"
+#include "inc/hw_ints.h"
 #include "inc/hw_types.h"
 #include "driverlib/pin_map.h"
-
 #include "OrbitOLEDInterface.h"
 #include "utils/ustdlib.h"  // usprintf()
 
@@ -204,7 +203,7 @@ int main(void) {
 */
 		// Update Display (skip updating every X ticks instead)
 		//display_print(string);
-		usprintf(oled_freq, "f : %3d", freq);
+		usprintf(oled_freq, "f : %3d", yaw);
 		duty_cycle = alt_output.duty_cycle;
 		usprintf(oled_dc, "dc: %3d%%", duty_cycle);
 		OLEDStringDraw(oled_freq, 0, 0);

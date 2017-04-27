@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
 // Lookup table for quadrature encoder
 int32_t quad_lookup[16] = {
 		0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, 1, -1, 0
