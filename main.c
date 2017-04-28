@@ -47,6 +47,7 @@
 // Quadrature Signals
 
 
+
 int freq_cap(uint32_t new_freq, uint32_t old_freq) {
 	if (new_freq == 0) {
 		return 150;
@@ -128,10 +129,12 @@ int main(void) {
 	pwmcounter_init();
 
 	OLEDInitialise();
-	char oled_freq[24] = "f :\0";
+	char oled_freq[24] = "yaw :\0";
 	char oled_dc[24] = "dc:\0";
 
 	//PWMOut yaw_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, 150, 0.5);
+
+	//uart_init();
 
 	// Declear variables that hold sensor input
 	uint32_t current_alt = 0;
@@ -148,7 +151,7 @@ int main(void) {
 
 	pid_target_set(&pid_alt, 50);
 
-
+	//uart_print("TEST");
 
 	while (1) {
 		// Copy current height from ADC
@@ -168,8 +171,14 @@ int main(void) {
 			pwm_frequency_set(&alt_output, freq);
 			last_accepted_freq = freq;
 		}
-
-
+		//TODO change this round so it loops rather than sets, otherwise you drop a couple degrees
+		//limit the yaw
+		if (yaw > 224) {
+			yaw -=224;
+		}
+		if (yaw < 0) {
+			yaw +=224;
+		}
 		// Update target Altitude and Yaw if respective button was pressed
 		if (button_read(&buttons[BUTTON_ALT_UP])) {
 			//pid_target_set(&pid_alt, pid_alt.target + 0.15);
@@ -203,14 +212,15 @@ int main(void) {
 */
 		// Update Display (skip updating every X ticks instead)
 		//display_print(string);
-		usprintf(oled_freq, "f : %3d", yaw);
+		usprintf(oled_freq, "yaw : %d", quad_get_degrees());
 		duty_cycle = alt_output.duty_cycle;
-		usprintf(oled_dc, "dc: %3d%%", duty_cycle);
+		usprintf(oled_dc, "pin: %d%d%d%d,                %d %d            ",(pin_state)&1,(pin_state>>1)&1,(pin_state>>2)&1,(pin_state>>3)&1,yaw_delta,pin_state);
 		OLEDStringDraw(oled_freq, 0, 0);
 		OLEDStringDraw(oled_dc, 0, 1);
 
 		// Send status to UART (skip updating every X ticks)
 		//uart_csv(pid_alt, pid_yaw, pwm_alt, pwm_yaw);
+
 	}
 }
 

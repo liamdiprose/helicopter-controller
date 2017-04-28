@@ -12,18 +12,21 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-
+#include "driverlib/gpio.h"
+#include "inc/hw_memmap.h"
 
 // Lookup table for quadrature encoder
-int32_t quad_lookup[16] = {
-		0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, 1, -1, 0
-};
+int32_t quad_lookup[16];
+uint32_t qpins;
+//= {
+//0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, 1, -1, 0
+//};
 
 //yaw global
-uint32_t yaw;
-
+int32_t yaw;
+int32_t yaw_delta; // for debug
 //pin state global
-uint32_t pin_state;
+int32_t pin_state;
 
 //initialise the quadrature
 void quad_init(void);
@@ -32,7 +35,7 @@ void quad_init(void);
 void quad_measure(void);
 
 // give the current yaw (quadrature encoded) position in degrees
-float quad_get_degrees();
+int32_t quad_get_degrees();
 
 
 #endif /* QUAD_ENCODER_H_ */
