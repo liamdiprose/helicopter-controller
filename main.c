@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-
 #include "inc/tm4c123gh6pm.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
@@ -18,12 +17,13 @@
 #include "driverlib/pin_map.h"
 #include "OrbitOLEDInterface.h"
 #include "utils/ustdlib.h"  // usprintf()
-
+#include "driverlib/pin_map.h"
 #include "button.h"
 #include "pwm.h"
 #include "pid.h"
 #include "pwmcounter.h"
 #include "quad_encoder.h"
+#include "AltitudeADC.h"
 
 #define PWM_INPUT_THRESHOLD 10
 
@@ -89,7 +89,8 @@ int main(void) {
 	GPIOPinTypePWM(GPIO_PORTC_BASE, GPIO_PIN_5);
 	// Link the connector to the PWM generator
 	GPIOPinConfigure(GPIO_PC5_M0PWM7);
-
+	// link the connector to the ADC input
+	//GPIOPinConfigure(GPIO_PE4_M0AIN9);
 
 	// Initialise buttons into global array
 	buttons[BUTTON_ALT_UP] = button_init(GPIO_PORTE_BASE, GPIO_PIN_0);
@@ -100,6 +101,7 @@ int main(void) {
 	SysTickEnable();
 	SysTickIntEnable();
 	SysTickIntRegister(button_check);
+	SysTickIntRegister(update_Altitude);
 
 	// Enable Timer for getting time inbetween button presses
 	TimerConfigure(TIMER5_BASE, TIMER_CFG_PERIODIC_UP);
@@ -123,7 +125,7 @@ int main(void) {
 	GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 	// initialises values, in the quad_encoder file
 	quad_init();
-
+	Altitude_init();
 
 
 	pwmcounter_init();
@@ -171,13 +173,15 @@ int main(void) {
 			pwm_frequency_set(&alt_output, freq);
 			last_accepted_freq = freq;
 		}
-		//TODO change this round so it loops rather than sets, otherwise you drop a couple degrees
-		//limit the yaw
+		//this should loop properly now, making sure that it stays within a valid range for the majority of the time.
+		// actually fix this, its still broken
 		if (yaw > 224) {
-			yaw -=224;
+			yaw = yaw-224;
+			num_rotations +=1;
 		}
 		if (yaw < 0) {
-			yaw +=224;
+			yaw =yaw+224;
+			num_rotations -=1;
 		}
 		// Update target Altitude and Yaw if respective button was pressed
 		if (button_read(&buttons[BUTTON_ALT_UP])) {
@@ -212,9 +216,10 @@ int main(void) {
 */
 		// Update Display (skip updating every X ticks instead)
 		//display_print(string);
-		usprintf(oled_freq, "yaw : %d", quad_get_degrees());
+		usprintf(oled_freq, "yaw:%d      ",quad_get_degrees());
 		duty_cycle = alt_output.duty_cycle;
-		usprintf(oled_dc, "pin: %d%d%d%d,                %d %d            ",(pin_state)&1,(pin_state>>1)&1,(pin_state>>2)&1,(pin_state>>3)&1,yaw_delta,pin_state);
+		//usprintf(oled_dc, "pin: %d%d%d%d",(pin_state)&1,(pin_state>>1)&1,(pin_state>>2)&1,(pin_state>>3)&1);
+		usprintf(oled_dc, "Alt%%:%d   #rot:%d  ",altitude_get_percent(),num_rotations);
 		OLEDStringDraw(oled_freq, 0, 0);
 		OLEDStringDraw(oled_dc, 0, 1);
 

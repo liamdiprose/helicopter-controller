@@ -12,6 +12,7 @@
 //initialise the quadrature
 void quad_init(void){
 	yaw=0;
+	num_rotations=0;
 	pin_state=0;
 	quad_lookup[0]=0;
 	quad_lookup[1]=1;
@@ -46,5 +47,5 @@ void quad_measure(void){
 
 // give the current yaw (quadrature encoded) position in degrees
 int32_t quad_get_degrees(){
-	return (360/224)*yaw;
+	return 360*yaw/224;
 }

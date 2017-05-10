@@ -18,6 +18,8 @@
 // Lookup table for quadrature encoder
 int32_t quad_lookup[16];
 uint32_t qpins;
+
+int32_t num_rotations;
 //= {
 //0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, 1, -1, 0
 //};
