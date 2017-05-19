@@ -1,16 +1,18 @@
-/*
- * display.h
- * Functions used for outputing data to the onboard OLED Display.
- *
- *  Created on: Mar 22, 2017
- *      Author: Aden Durney
- *      Author: Liam Diprose
- */
-
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
+#include "OrbitOLEDInterface.h"
+#include "utils/ustdlib.h"  // usprintf()
+
+
+
 // Initialise display
 int display_init(void);
+
+void display_update_yaw(int yaw);
+
+// Update altitude reading on OLED display
+void display_update_alt(int altitude);
+
 
 #endif /* DISPLAY_H_ */
