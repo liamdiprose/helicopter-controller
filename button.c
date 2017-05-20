@@ -10,13 +10,17 @@
 
 // Create a button struct
 Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {
+	// Initialise timer for checking buttons
+	SysTickPeriodSet(SysCtlClockGet()/100);
+	SysTickEnable();
+	SysTickIntEnable();
+	SysTickIntRegister(button_check);
+    
 	// Configure pin to be pull down (button will be high when pressed)
 	GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
 
 	// Configure input to be GPIO
 	GPIOPinTypeGPIOInput(gpio_base, gpio_pin);
-
-
 
 	Button new_button = {gpio_base, gpio_pin, false, BUTTON_COUNT_START, false, false};
 

@@ -2,11 +2,10 @@
 #include "pwm.h"
 
 
-// Create a PWM output handler
-PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit){
+// Create a PWM output 
+PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit) {
 
 		PWMGenConfigure(addr_base, clk_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
-
 		PWMGenEnable(addr_base, clk_gen);
 
 		PWMOut new_pwm_out = {
@@ -23,6 +22,10 @@ PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t out
 
 		// Return struct for handling this PWM output
 		return new_pwm_out;
+//	// Set PC5 output to be PWM
+//	GPIOPinTypePWM(GPIO_PORTC_BASE, GPIO_PIN_5);
+//	// Link the connector to the PWM generator
+//	GPIOPinConfigure(GPIO_PC5_M0PWM7);
 }
 
 // Set the duty cycle of the pwm output

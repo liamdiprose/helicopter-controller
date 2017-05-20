@@ -17,7 +17,7 @@
 #include "driverlib/pwm.h"
 
 
-#define DEFAULT_FREQUENCY 150
+#define PWM_DEFAULT_FREQUENCY 150
 #define DEFAULT_DUTY_CYCLE 0.5
 
 typedef struct pwmout_s {

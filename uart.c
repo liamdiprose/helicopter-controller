@@ -11,10 +11,12 @@ int uart_init(void) {
 	UARTEnable(UART_USB_GPIO_BASE);
 }
 
-
+// TODO: use <stdarg.h> to support undefined amount of parameters,
+// then pass it to usprintf?
 void uart_print(char* message) {
 	while(*message) {
 		UARTCharPut(*message);
 		message++;
 	}
 }
+
