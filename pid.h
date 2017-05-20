@@ -15,7 +15,6 @@ typedef struct PID_config_s {
 	float P;
 	float I;
 	float D;
-	float target;
 } PIDConfig;
 
 // Create a new PID configuration
@@ -30,9 +29,8 @@ int pid_intergral_set(PIDConfig* config, float KI);
 // Set Derivative Gain (KD) of PID configuration
 int pid_derivative_set(PIDConfig* config, float KD);
 
-int pid_target_set(PIDConfig* config, float target);
-
-// Calculate new value from PID controller
-float pid_update(PIDConfig config, uint32_t current);
+// Calculate new duty cycle output from PID controller, from target and
+// current reading.
+float pid_update(PIDConfig config, uint32_t target, uint32_t current);
 
 #endif /* PID_H_ */

@@ -15,20 +15,20 @@
 #include "driverlib/gpio.h"
 #include "inc/hw_memmap.h"
 
-// Lookup table for quadrature encoder
-int32_t quad_lookup[16];
-uint32_t qpins;
+#define QUAD_GPIO_BASE GPIO_PORTB_BASE
+#define QUAD_GPIO_PIN_0 GPIO_PIN_0
+#define QUAD_GPIO_PIN_1 GPIO_PIN_1
+#define QUAD_GPIO_PINS (QUAD_GPIO_PIN_0 | QUAD_GPIO_PIN_1)
 
-int32_t num_rotations;
-//= {
-//0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, 1, -1, 0
-//};
+#define QUAD_GPIO_INT_PIN_0 GPIO_INT_PIN_0
+#define QUAD_GPIO_INT_PIN_1 GPIO_INT_PIN_1
+#define QUAD_GPIO_INT_PINS (QUAD_GPIO_INT_PIN_0 | QUAD_GPIO_INT_PIN_1)
+
+// Lookup table for quadrature encoder
+int8_t quad_lookup[16];
 
 //yaw global
-int32_t yaw;
-int32_t yaw_delta; // for debug
-//pin state global
-int32_t pin_state;
+int32_t g_yaw;
 
 //initialise the quadrature
 void quad_init(void);

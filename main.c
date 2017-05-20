@@ -1,7 +1,3 @@
-/*
- * main.c
- */
-
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -27,49 +23,33 @@
 #define PWM_INPUT_THRESHOLD 10
 
 
-//#define PART_TM4C123GH6PM
-
-
 #define ALT_BUTTON_STEP_MULTIPLIER 0.05
 #define YAW_BUTTON_STEP_MULTIPLIER 0.15
 
-#define ALT_INCREMENT(alt)  (alt + ALT_BUTTON_STEP_MULTIPLIER) //(alt * (1 + ALT_BUTTON_STEP_MULTIPLIER))
-#define ALT_DECREMENT(alt) (alt - ALT_BUTTON_STEP_MULTIPLIER) //* (1 - ALT_BUTTON_STEP_MULTIPLIER))
-
 #define PWM_COUNTER_START 1000
-
-//#define YAW_INCREMENT(yaw) (yaw * (1 + YAW_BUTTON_STEP_MULTIPLIER))
-//#define YAW_DECREMENT(yaw) (yaw * (1 - YAW_BUTTON_STEP_MULTIPLIER))
-
-// Interrupts
-// User inputs
-// Quadrature Signals
-
 
 
 int main(void) {
 	
 	SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN |
 	                   SYSCTL_XTAL_16MHZ);
-	uint32_t clock = SysCtlClockGet();
 	SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
-	PIDConfig pid_alt = {.P = 1, .I = 0, .D = 0 };
-	//PIDConfig pid_yaw = {.P = 1, .I = 0, .D = 0 };
 
 	// Enable GPIO Input and Output
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB); // quadrature encoder
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);   // PWM Main Rotor
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // BTN1 on PIN2
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE); // BTN2 on PIN0
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER5);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
 
-
+	PIDConfig pid_alt = pid_init(1, 0, 0.01);
+    PIDConfig pid_yaw = pid_init(1, 0, 0.01);
+    
 	// Enable PWM Module to generate PWM outputs
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
 
 	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_PWM0));
-		SysCtlDelay(9);  // Test: wait for
+	SysCtlDelay(9);  // Test: wait for
 
 	PWMOut alt_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_7, PWM_OUT_7_BIT);
 	// Set PC5 output to be PWM
@@ -93,25 +73,13 @@ int main(void) {
 
 	// Enables for the quadrature encoding
 	//
-	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_0);
-	GPIOPinTypeGPIOInput(GPIO_PORTB_BASE,GPIO_PIN_1);
-	//Add the interrupt to the table
-	GPIOIntRegister(GPIO_PORTB_BASE, quad_measure);
-	// Set the interrupt to trigger on both edges
-	GPIOIntTypeSet(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1, GPIO_BOTH_EDGES);
-	GPIOIntEnable(GPIO_PORTB_BASE, GPIO_INT_PIN_0 | GPIO_INT_PIN_1);
 	// Initialises values, in the quad_encoder file
 
 	quad_init();
 	Altitude_init();
 
-	pwmcounter_init();
-
-
-	char oled_freq[24] = "yaw :\0";
-	char oled_dc[24] = "dc:\0";
-
-	//PWMOut yaw_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, 150, 0.5);
+	PWMOut yaw_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, 150, 0.5);
+	PWMOut alt_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, 150, 0.5);
 
 	uart_init();
 
@@ -119,10 +87,6 @@ int main(void) {
 	uint32_t current_alt = 0;
 
 
-	uint32_t freq = 1;
-
-	uint32_t last_accepted_freq = 0;
-	uint32_t duty_cycle = 0;
 
 	while (1) {
 		// Copy current height from ADC

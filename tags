@@ -1,0 +1,312 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ACCL	lib_OrbitOled/OrbitBoosterPackDefs.h	152;"	d
+ACCLADDR	lib_OrbitOled/OrbitBoosterPackDefs.h	154;"	d
+ACCL_INT1	lib_OrbitOled/OrbitBoosterPackDefs.h	141;"	d
+ACCL_INT1Port	lib_OrbitOled/OrbitBoosterPackDefs.h	139;"	d
+ACCL_INT2	lib_OrbitOled/OrbitBoosterPackDefs.h	142;"	d
+ACCL_INT2Port	lib_OrbitOled/OrbitBoosterPackDefs.h	140;"	d
+AIN	lib_OrbitOled/OrbitBoosterPackDefs.h	51;"	d
+AINPort	lib_OrbitOled/OrbitBoosterPackDefs.h	50;"	d
+ALTITUDEADC_H_	AltitudeADC.h	9;"	d
+ALT_BUTTON_STEP_MULTIPLIER	main.c	26;"	d	file:
+Altitude_init	AltitudeADC.c	/^void Altitude_init(void){$/;"	f
+BAUD_RATE	uart.h	21;"	d
+BTN1	lib_OrbitOled/OrbitBoosterPackDefs.h	67;"	d
+BTN1Port	lib_OrbitOled/OrbitBoosterPackDefs.h	65;"	d
+BTN2	lib_OrbitOled/OrbitBoosterPackDefs.h	68;"	d
+BTN2Port	lib_OrbitOled/OrbitBoosterPackDefs.h	66;"	d
+BUF_SIZE	Waveform_analysis_with_OLED.c	67;"	d	file:
+BUTTON_ALT_DOWN	button.h	20;"	d
+BUTTON_ALT_UP	button.h	19;"	d
+BUTTON_CHECK_MS	button.h	27;"	d
+BUTTON_COUNT_START	button.h	29;"	d
+BUTTON_H_	button.h	9;"	d
+BUTTON_NUM	button.h	16;"	d
+BUTTON_PRESS_THRES_MS	button.h	28;"	d
+BUTTON_STATE_PRESSED	button.h	24;"	d
+BUTTON_STATE_RELEASED	button.h	25;"	d
+Button	button.h	/^} Button;$/;"	t	typeref:struct:button_s
+CIRCBUFT_H_	circBufT.h	2;"	d
+D	pid.h	/^	float D;$/;"	m	struct:PID_config_s
+DEFAULT_DUTY_CYCLE	pwm.h	21;"	d
+DEFAULT_FREQUENCY	pwm.h	20;"	d
+DELAY_INC	lib_OrbitOled/delay.h	22;"	d
+DISPLAY_H_	display.h	2;"	d
+DelayInit	lib_OrbitOled/delay.c	/^DelayInit()	$/;"	f
+DelayMs	lib_OrbitOled/delay.c	/^DelayMs(int cms)$/;"	f
+DeviceInit	Waveform_analysis_with_OLED.c	/^void DeviceInit(void)$/;"	f
+EEPROM	lib_OrbitOled/OrbitBoosterPackDefs.h	150;"	d
+EEPROMADDR	lib_OrbitOled/OrbitBoosterPackDefs.h	155;"	d
+FaultISR	tm4c123gh6pm_startup_ccs.c	/^FaultISR(void)$/;"	f	file:
+HARDWARE	lib_OrbitOled/OrbitBoosterPackDefs.h	23;"	d
+HIGH	lib_OrbitOled/OrbitBoosterPackDefs.h	25;"	d
+I	pid.h	/^	float I;$/;"	m	struct:PID_config_s
+I2CPort	lib_OrbitOled/OrbitBoosterPackDefs.h	128;"	d
+I2CSCL	lib_OrbitOled/OrbitBoosterPackDefs.h	133;"	d
+I2CSCLPort	lib_OrbitOled/OrbitBoosterPackDefs.h	130;"	d
+I2CSCL_PIN	lib_OrbitOled/OrbitBoosterPackDefs.h	132;"	d
+I2CSDA	lib_OrbitOled/OrbitBoosterPackDefs.h	134;"	d
+I2CSDAPort	lib_OrbitOled/OrbitBoosterPackDefs.h	129;"	d
+I2CSDA_PIN	lib_OrbitOled/OrbitBoosterPackDefs.h	131;"	d
+INPUT	lib_OrbitOled/OrbitBoosterPackDefs.h	22;"	d
+IntDefaultHandler	tm4c123gh6pm_startup_ccs.c	/^IntDefaultHandler(void)$/;"	f	file:
+JA1	lib_OrbitOled/OrbitBoosterPackDefs.h	96;"	d
+JA1Port	lib_OrbitOled/OrbitBoosterPackDefs.h	86;"	d
+JA2	lib_OrbitOled/OrbitBoosterPackDefs.h	97;"	d
+JA2Port	lib_OrbitOled/OrbitBoosterPackDefs.h	87;"	d
+JA3	lib_OrbitOled/OrbitBoosterPackDefs.h	98;"	d
+JA3Port	lib_OrbitOled/OrbitBoosterPackDefs.h	88;"	d
+JA4	lib_OrbitOled/OrbitBoosterPackDefs.h	99;"	d
+JA4Port	lib_OrbitOled/OrbitBoosterPackDefs.h	89;"	d
+JAPort	lib_OrbitOled/OrbitBoosterPackDefs.h	85;"	d
+JB1	lib_OrbitOled/OrbitBoosterPackDefs.h	100;"	d
+JB1Port	lib_OrbitOled/OrbitBoosterPackDefs.h	92;"	d
+JB2	lib_OrbitOled/OrbitBoosterPackDefs.h	101;"	d
+JB2Port	lib_OrbitOled/OrbitBoosterPackDefs.h	93;"	d
+JB3	lib_OrbitOled/OrbitBoosterPackDefs.h	102;"	d
+JB3Port	lib_OrbitOled/OrbitBoosterPackDefs.h	94;"	d
+JB4	lib_OrbitOled/OrbitBoosterPackDefs.h	103;"	d
+JB4Port	lib_OrbitOled/OrbitBoosterPackDefs.h	95;"	d
+JBInPort	lib_OrbitOled/OrbitBoosterPackDefs.h	90;"	d
+JBOutPort	lib_OrbitOled/OrbitBoosterPackDefs.h	91;"	d
+LAUNCHPAD_H_	lib_OrbitOled/LaunchPad.h	18;"	d
+LED1	lib_OrbitOled/OrbitBoosterPackDefs.h	77;"	d
+LED1Port	lib_OrbitOled/OrbitBoosterPackDefs.h	73;"	d
+LED2	lib_OrbitOled/OrbitBoosterPackDefs.h	78;"	d
+LED2Port	lib_OrbitOled/OrbitBoosterPackDefs.h	74;"	d
+LED3	lib_OrbitOled/OrbitBoosterPackDefs.h	79;"	d
+LED3Port	lib_OrbitOled/OrbitBoosterPackDefs.h	75;"	d
+LED4	lib_OrbitOled/OrbitBoosterPackDefs.h	80;"	d
+LED4Port	lib_OrbitOled/OrbitBoosterPackDefs.h	76;"	d
+LOW	lib_OrbitOled/OrbitBoosterPackDefs.h	24;"	d
+NEW_ALT_VALUE_RATIO	AltitudeADC.h	26;"	d
+NmiSR	tm4c123gh6pm_startup_ccs.c	/^NmiSR(void)$/;"	f	file:
+OLD_ALT_VALUE_RATIO	AltitudeADC.h	25;"	d
+OLEDInitialise	OrbitOLEDInterface.c	/^OLEDInitialise (void){$/;"	f
+OLEDStringDraw	OrbitOLEDInterface.c	/^OLEDStringDraw(char *pcStr, unsigned long ulColumn, unsigned long ulRow)$/;"	f
+ONE_MILLISECOND	Waveform_analysis_with_OLED.c	65;"	d	file:
+ONE_MS	Waveform_analysis_with_OLED.c	66;"	d	file:
+ORBITBOOSTERPACKDEFS_H_	lib_OrbitOled/OrbitBoosterPackDefs.h	11;"	d
+ORBITOLEDINTERFACE_H_	OrbitOLEDInterface.h	10;"	d
+ORBITOLED_FILLPAT	lib_OrbitOled/FillPat.h	24;"	d
+ORBITOLED_INC	lib_OrbitOled/OrbitOled.h	22;"	d
+OUTPUT	lib_OrbitOled/OrbitBoosterPackDefs.h	21;"	d
+OrbitOledAdvanceCursor	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledAdvanceCursor()$/;"	f
+OrbitOledClampXco	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledClampXco(int xco)$/;"	f
+OrbitOledClampYco	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledClampYco(int yco)$/;"	f
+OrbitOledClear	lib_OrbitOled/OrbitOled.c	/^OrbitOledClear()$/;"	f
+OrbitOledClearBuffer	lib_OrbitOled/OrbitOled.c	/^OrbitOledClearBuffer()$/;"	f
+OrbitOledDefUserChar	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledDefUserChar(char ch, char * pbDef)$/;"	f
+OrbitOledDevInit	lib_OrbitOled/OrbitOled.c	/^OrbitOledDevInit()$/;"	f
+OrbitOledDrawChar	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledDrawChar(char ch)$/;"	f
+OrbitOledDrawGlyph	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledDrawGlyph(char ch)$/;"	f
+OrbitOledDrawPixel	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledDrawPixel()$/;"	f
+OrbitOledDrawRect	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledDrawRect(int xco, int yco)$/;"	f
+OrbitOledDrawString	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledDrawString(char * sz)$/;"	f
+OrbitOledDvrInit	lib_OrbitOled/OrbitOled.c	/^OrbitOledDvrInit()$/;"	f
+OrbitOledFillRect	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledFillRect(int xco, int yco)$/;"	f
+OrbitOledGetBmp	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledGetBmp(int dxco, int dyco, char * pbBits)$/;"	f
+OrbitOledGetCharUpdate	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledGetCharUpdate()$/;"	f
+OrbitOledGetCursor	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledGetCursor( int * pxch, int * pych)$/;"	f
+OrbitOledGetDrawMode	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledGetDrawMode()$/;"	f
+OrbitOledGetPixel	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledGetPixel()$/;"	f
+OrbitOledGetPos	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledGetPos(int * pxco, int * pyco)$/;"	f
+OrbitOledGetStdPattern	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledGetStdPattern(int ipat)$/;"	f
+OrbitOledHostInit	lib_OrbitOled/OrbitOled.c	/^OrbitOledHostInit()$/;"	f
+OrbitOledInit	lib_OrbitOled/OrbitOled.c	/^OrbitOledInit()$/;"	f
+OrbitOledLineTo	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledLineTo(int xco, int yco)$/;"	f
+OrbitOledMoveDown	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledMoveDown()$/;"	f
+OrbitOledMoveLeft	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledMoveLeft()$/;"	f
+OrbitOledMoveRight	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledMoveRight()$/;"	f
+OrbitOledMoveTo	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledMoveTo(int xco, int yco)$/;"	f
+OrbitOledMoveUp	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledMoveUp()$/;"	f
+OrbitOledPutBmp	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledPutBmp(int dxco, int dyco, char * pbBits)$/;"	f
+OrbitOledPutBuffer	lib_OrbitOled/OrbitOled.c	/^OrbitOledPutBuffer(int cb, char * rgbTx)$/;"	f
+OrbitOledPutChar	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledPutChar(char ch)$/;"	f
+OrbitOledPutString	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledPutString(char * sz)$/;"	f
+OrbitOledRopAnd	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledRopAnd(char bPix, char bDsp, char mskPix)$/;"	f
+OrbitOledRopOr	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledRopOr(char bPix, char bDsp, char mskPix)$/;"	f
+OrbitOledRopSet	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledRopSet(char bPix, char bDsp, char mskPix)$/;"	f
+OrbitOledRopXor	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledRopXor(char bPix, char bDsp, char mskPix)$/;"	f
+OrbitOledSetCharUpdate	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledSetCharUpdate(int f)$/;"	f
+OrbitOledSetCursor	lib_OrbitOled/OrbitOledChar.c	/^OrbitOledSetCursor(int xch, int ych)$/;"	f
+OrbitOledSetDrawColor	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledSetDrawColor(char clr)$/;"	f
+OrbitOledSetDrawMode	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledSetDrawMode(int mod)$/;"	f
+OrbitOledSetFillPattern	lib_OrbitOled/OrbitOledGrph.c	/^OrbitOledSetFillPattern(char * pbPat)$/;"	f
+OrbitOledUpdate	lib_OrbitOled/OrbitOled.c	/^OrbitOledUpdate()$/;"	f
+P	pid.h	/^	float P;$/;"	m	struct:PID_config_s
+PIDConfig	pid.h	/^} PIDConfig;$/;"	t	typeref:struct:PID_config_s
+PID_H_	pid.h	10;"	d
+PID_config_s	pid.h	/^typedef struct PID_config_s {$/;"	s
+PWMOut	pwm.h	/^} PWMOut;$/;"	t	typeref:struct:pwmout_s
+PWM_COUNTER_START	main.c	29;"	d	file:
+PWM_H_	pwm.h	9;"	d
+PWM_INPUT_THRESHOLD	main.c	23;"	d	file:
+QUAD_ENCODER_H_	quad_encoder.h	10;"	d
+READ	lib_OrbitOled/OrbitBoosterPackDefs.h	156;"	d
+ResetISR	tm4c123gh6pm_startup_ccs.c	/^ResetISR(void)$/;"	f
+SCK_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	39;"	d
+SCK_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	30;"	d
+SCK_OLED_PIN	lib_OrbitOled/OrbitBoosterPackDefs.h	37;"	d
+SDI_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	40;"	d
+SDI_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	31;"	d
+SDI_OLED_PIN	lib_OrbitOled/OrbitBoosterPackDefs.h	38;"	d
+SSI0CLK	lib_OrbitOled/OrbitBoosterPackDefs.h	123;"	d
+SSI0FSS	lib_OrbitOled/OrbitBoosterPackDefs.h	120;"	d
+SSI0Port	lib_OrbitOled/OrbitBoosterPackDefs.h	119;"	d
+SSI0RX	lib_OrbitOled/OrbitBoosterPackDefs.h	122;"	d
+SSI0TX	lib_OrbitOled/OrbitBoosterPackDefs.h	121;"	d
+SWITCH_SW1_INACTIVE	Waveform_analysis_with_OLED.c	69;"	d	file:
+SWT1	lib_OrbitOled/OrbitBoosterPackDefs.h	59;"	d
+SWT1Port	lib_OrbitOled/OrbitBoosterPackDefs.h	57;"	d
+SWT2	lib_OrbitOled/OrbitBoosterPackDefs.h	60;"	d
+SWT2Port	lib_OrbitOled/OrbitBoosterPackDefs.h	58;"	d
+SWTPort	lib_OrbitOled/OrbitBoosterPackDefs.h	56;"	d
+SampleStoreDisplay	Waveform_analysis_with_OLED.c	/^void SampleStoreDisplay()$/;"	f
+Ssi3PutByte	lib_OrbitOled/OrbitOled.c	/^Ssi3PutByte(char bVal)$/;"	f
+SysTick_IntHandler	Waveform_analysis_with_OLED.c	/^void SysTick_IntHandler(void)$/;"	f
+TEMP	lib_OrbitOled/OrbitBoosterPackDefs.h	151;"	d
+TEMPADDR	lib_OrbitOled/OrbitBoosterPackDefs.h	153;"	d
+U1CTSPort	lib_OrbitOled/OrbitBoosterPackDefs.h	110;"	d
+U1RTSPort	lib_OrbitOled/OrbitBoosterPackDefs.h	109;"	d
+U1RXTXPort	lib_OrbitOled/OrbitBoosterPackDefs.h	108;"	d
+UART1CTS	lib_OrbitOled/OrbitBoosterPackDefs.h	111;"	d
+UART1RTS	lib_OrbitOled/OrbitBoosterPackDefs.h	114;"	d
+UART1RX	lib_OrbitOled/OrbitBoosterPackDefs.h	113;"	d
+UART1TX	lib_OrbitOled/OrbitBoosterPackDefs.h	112;"	d
+UART_H_	uart.h	10;"	d
+UART_USB_BASE	uart.h	22;"	d
+UART_USB_GPIO_BASE	uart.h	25;"	d
+UART_USB_GPIO_PINS	uart.h	28;"	d
+UART_USB_GPIO_PIN_RX	uart.h	26;"	d
+UART_USB_GPIO_PIN_TX	uart.h	27;"	d
+UART_USB_PERIPH_GPIO	uart.h	24;"	d
+UART_USB_PERIPH_UART	uart.h	23;"	d
+VBAT_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	41;"	d
+VBAT_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	32;"	d
+VDD_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	42;"	d
+VDD_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	33;"	d
+WRITE	lib_OrbitOled/OrbitBoosterPackDefs.h	157;"	d
+YAW_BUTTON_STEP_MULTIPLIER	main.c	27;"	d	file:
+altitude_current	AltitudeADC.h	/^uint32_t altitude_current;$/;"	v
+altitude_get_percent	AltitudeADC.c	/^uint32_t altitude_get_percent(void){$/;"	f
+altitude_hold	AltitudeADC.h	/^uint32_t altitude_hold[1];$/;"	v
+altitude_range	AltitudeADC.h	/^uint32_t altitude_range;$/;"	v
+base	pwm.h	/^	uint32_t base;$/;"	m	struct:pwmout_s
+bnOledCur	lib_OrbitOled/OrbitOled.c	/^int		bnOledCur;			\/\/bit number of bit corresponding to current location$/;"	v
+bottom_altitude	AltitudeADC.h	/^uint32_t bottom_altitude;$/;"	v
+bottom_altitude_current	AltitudeADC.h	/^uint32_t bottom_altitude_current;$/;"	v
+bottom_altitude_hold	AltitudeADC.h	/^uint32_t bottom_altitude_hold[1];$/;"	v
+button_check	button.c	/^void button_check(void) {$/;"	f
+button_init	button.c	/^Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {$/;"	f
+button_read	button.c	/^bool button_read(Button* btn) {$/;"	f
+button_s	button.h	/^typedef struct button_s {$/;"	s
+buttons	button.h	/^Button buttons[BUTTON_NUM];$/;"	v
+cbOledChar	lib_OrbitOled/OrbitOled.h	34;"	d
+cbOledDispMax	lib_OrbitOled/OrbitOled.h	28;"	d
+cbOledFontUser	lib_OrbitOled/OrbitOled.h	36;"	d
+ccolOledMax	lib_OrbitOled/OrbitOled.h	30;"	d
+chOledUserMax	lib_OrbitOled/OrbitOled.h	35;"	d
+ciptnVals	lib_OrbitOled/FillPat.h	29;"	d
+circBuf_t	circBufT.h	/^} circBuf_t;$/;"	t	typeref:struct:__anon1
+clrOledCur	lib_OrbitOled/OrbitOled.c	/^char	clrOledCur;			\/\/drawing color to use$/;"	v
+cntMsDelay	lib_OrbitOled/delay.h	27;"	d
+count	button.h	/^	uint32_t count;$/;"	m	struct:button_s
+cpagOledMax	lib_OrbitOled/OrbitOled.h	32;"	d
+crowOledMax	lib_OrbitOled/OrbitOled.h	31;"	d
+data	circBufT.h	/^	uint32_t *data;		\/\/ pointer to the data$/;"	m	struct:__anon1
+display_init	display.c	/^int display_init(void) {$/;"	f
+display_update_alt	display.c	/^void display_update_alt(int altitude) {$/;"	f
+display_update_yaw	display.c	/^void display_update_yaw(int yaw) {$/;"	f
+duty_cycle	pwm.h	/^	uint8_t duty_cycle;$/;"	m	struct:pwmout_s
+dxcoOledFontCur	lib_OrbitOled/OrbitOled.c	/^int		dxcoOledFontCur;$/;"	v
+dycoOledFontCur	lib_OrbitOled/OrbitOled.c	/^int		dycoOledFontCur;$/;"	v
+fOledCharUpdate	lib_OrbitOled/OrbitOled.c	/^int		fOledCharUpdate;$/;"	v
+freeCircBuf	circBufT.c	/^freeCircBuf (circBuf_t * buffer)$/;"	f
+g_inBuffer	Waveform_analysis_with_OLED.c	/^static circBuf_t g_inBuffer;	\/\/ buffer of size BUF_SIZE integers$/;"	v	file:
+g_pfnVectors	tm4c123gh6pm_startup_ccs.c	/^void (* const g_pfnVectors[])(void) =$/;"	v
+gen	pwm.h	/^	uint32_t gen;$/;"	m	struct:pwmout_s
+gpio_base	button.h	/^	uint32_t gpio_base;$/;"	m	struct:button_s
+gpio_pin	button.h	/^	uint32_t gpio_pin;$/;"	m	struct:button_s
+initCircBuf	circBufT.c	/^initCircBuf (circBuf_t *buffer, uint32_t size)$/;"	f
+iptnBlank	lib_OrbitOled/FillPat.h	34;"	d
+iptnCarrots	lib_OrbitOled/FillPat.h	41;"	d
+iptnCircleBar	lib_OrbitOled/FillPat.h	40;"	d
+iptnCirclesOpen	lib_OrbitOled/FillPat.h	39;"	d
+iptnCross	lib_OrbitOled/FillPat.h	36;"	d
+iptnSolid	lib_OrbitOled/FillPat.h	35;"	d
+iptnSpekOpen	lib_OrbitOled/FillPat.h	37;"	d
+iptnSpekTight	lib_OrbitOled/FillPat.h	38;"	d
+lpSW1	lib_OrbitOled/LaunchPad.h	115;"	d
+lpSW1Port	lib_OrbitOled/LaunchPad.h	113;"	d
+lpSW2	lib_OrbitOled/LaunchPad.h	116;"	d
+lpSW2Port	lib_OrbitOled/LaunchPad.h	114;"	d
+lpSWPort	lib_OrbitOled/LaunchPad.h	112;"	d
+main	Waveform_analysis_with_OLED.c	/^int main() {$/;"	f
+main	main.c	/^int main(void) {$/;"	f
+modOledAnd	lib_OrbitOled/OrbitOled.h	42;"	d
+modOledCur	lib_OrbitOled/OrbitOledGrph.c	/^int		modOledCur;$/;"	v
+modOledOr	lib_OrbitOled/OrbitOled.h	41;"	d
+modOledSet	lib_OrbitOled/OrbitOled.h	40;"	d
+modOledXor	lib_OrbitOled/OrbitOled.h	43;"	d
+nCS_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	43;"	d
+nCS_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	34;"	d
+nDC_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	45;"	d
+nDC_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	36;"	d
+nRES_OLED	lib_OrbitOled/OrbitBoosterPackDefs.h	44;"	d
+nRES_OLEDPort	lib_OrbitOled/OrbitBoosterPackDefs.h	35;"	d
+new_state	button.h	/^	char new_state;  \/\/ What is the counter trying to validate$/;"	m	struct:button_s
+num_rotations	quad_encoder.h	/^int32_t num_rotations;$/;"	v
+out	pwm.h	/^	uint32_t out;$/;"	m	struct:pwmout_s
+outbit	pwm.h	/^	uint32_t outbit;$/;"	m	struct:pwmout_s
+pbOledCur	lib_OrbitOled/OrbitOled.c	/^char *	pbOledCur;			\/\/address of byte corresponding to current location$/;"	v
+pbOledFontCur	lib_OrbitOled/OrbitOled.c	/^char *	pbOledFontCur;$/;"	v
+pbOledFontExt	lib_OrbitOled/OrbitOledChar.c	/^char *	pbOledFontExt;$/;"	v
+pbOledFontUser	lib_OrbitOled/OrbitOled.c	/^char *	pbOledFontUser;$/;"	v
+pbOledPatCur	lib_OrbitOled/OrbitOled.c	/^char *	pbOledPatCur;		\/\/current fill pattern$/;"	v
+period	pwm.h	/^	uint32_t period;$/;"	m	struct:pwmout_s
+pfnDoRop	lib_OrbitOled/OrbitOledGrph.c	/^char	(*pfnDoRop)(char bPix, char bDsp, char mskPix);$/;"	v
+pid_derivative_set	pid.c	/^int pid_derivative_set(PIDConfig* config, float KD) {$/;"	f
+pid_init	pid.c	/^PIDConfig pid_init(float KP, float KI, float KD) {$/;"	f
+pid_intergral_set	pid.c	/^int pid_intergral_set(PIDConfig* config, float KI) {$/;"	f
+pid_proportional_set	pid.c	/^int pid_proportional_set(PIDConfig* config, float KP) {$/;"	f
+pid_target_set	pid.c	/^int pid_target_set(PIDConfig* config, float target) {$/;"	f
+pid_update	pid.c	/^float pid_update(PIDConfig config, uint32_t current) {$/;"	f
+pin_state	quad_encoder.h	/^int32_t pin_state;$/;"	v
+pwm_duty_cycle_set	pwm.c	/^int pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle) {$/;"	f
+pwm_frequency_set	pwm.c	/^int pwm_frequency_set(PWMOut* pin, uint32_t frequency) {$/;"	f
+pwm_init	pwm.c	/^PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit){$/;"	f
+pwmout_s	pwm.h	/^typedef struct pwmout_s {$/;"	s
+qpins	quad_encoder.h	/^uint32_t qpins;$/;"	v
+quad_get_degrees	quad_encoder.c	/^int32_t quad_get_degrees(){$/;"	f
+quad_init	quad_encoder.c	/^void quad_init(void){$/;"	f
+quad_lookup	quad_encoder.h	/^int32_t quad_lookup[16];$/;"	v
+quad_measure	quad_encoder.c	/^void quad_measure(void){$/;"	f
+readCircBuf	circBufT.c	/^readCircBuf (circBuf_t *buffer)$/;"	f
+rgbFillPat	lib_OrbitOled/FillPat.c	/^const char rgbFillPat[] = {$/;"	v
+rgbOledBmp	lib_OrbitOled/OrbitOled.c	/^char	rgbOledBmp[cbOledDispMax];$/;"	v
+rgbOledFont0	lib_OrbitOled/ChrFont0.c	/^const char rgbOledFont0[] = {$/;"	v
+rgbOledFontUser	lib_OrbitOled/OrbitOledChar.c	/^char	rgbOledFontUser[cbOledFontUser];$/;"	v
+rindex	circBufT.h	/^	uint32_t rindex;	\/\/ index for reading, mod(size)$/;"	m	struct:__anon1
+size	circBufT.h	/^	uint32_t size;		\/\/ Number of entries in buffer$/;"	m	struct:__anon1
+state	button.h	/^	char state;     \/\/ Current state of button$/;"	m	struct:button_s
+top_altitude	AltitudeADC.h	/^uint32_t top_altitude;$/;"	v
+uart_init	uart.c	/^int uart_init(void) {$/;"	f
+uart_print	uart.c	/^void uart_print(char* message) {$/;"	f
+update_Altitude	AltitudeADC.c	/^void update_Altitude(void){$/;"	f
+updated	button.h	/^	char updated;      \/\/ Has current state been read yet?$/;"	m	struct:button_s
+windex	circBufT.h	/^	uint32_t windex;	\/\/ index for writing, mod(size)$/;"	m	struct:__anon1
+writeCircBuf	circBufT.c	/^writeCircBuf (circBuf_t *buffer, uint32_t entry)$/;"	f
+xchOledCur	lib_OrbitOled/OrbitOledChar.c	/^int		xchOledCur;$/;"	v
+xchOledMax	lib_OrbitOled/OrbitOledChar.c	/^int		xchOledMax;$/;"	v
+xcoOledCur	lib_OrbitOled/OrbitOled.c	/^int		xcoOledCur;$/;"	v
+yaw	quad_encoder.h	/^int32_t yaw;$/;"	v
+yaw_delta	quad_encoder.h	/^int32_t yaw_delta; \/\/ for debug$/;"	v
+ychOledCur	lib_OrbitOled/OrbitOledChar.c	/^int		ychOledCur;$/;"	v
+ychOledMax	lib_OrbitOled/OrbitOledChar.c	/^int		ychOledMax;$/;"	v
+ycoOledCur	lib_OrbitOled/OrbitOled.c	/^int		ycoOledCur;$/;"	v

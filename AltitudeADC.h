@@ -33,11 +33,10 @@ uint32_t altitude_range;
 uint32_t bottom_altitude;
 uint32_t top_altitude;
 
-//initialize the peripherals and variables required for altitute
+// Initialize the peripherals and variables required for altitute
 void Altitude_init(void);
 
-
-//interrpt to be registered
+// Interrpt to be registered
 void update_Altitude(void);
 
 uint32_t altitude_get_percent(void);
