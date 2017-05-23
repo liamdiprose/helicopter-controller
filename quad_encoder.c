@@ -9,8 +9,8 @@
 
 //initialise the quadrature
 void quad_init(void) {
-	yaw = 0;
-	pin_state = 0;
+	g_yaw = 0;
+	encoder_state = 0;
 	quad_lookup[0] = 0;
 	quad_lookup[1] = 1;
 	quad_lookup[2] = -1;
@@ -47,15 +47,15 @@ void quad_measure (void) {
     // current values of input channels.
     // Encoder state is 4 bits long, holding previous and current states of 
     // pins.
-	encoder_state = ((encoder_state << 2) | qpins ) & 15;
+	encoder_state = ((encoder_state << 2) | current_inputs ) & 15;
     
     // Find if rotation is detected by consulting  lookup table with 
     // encoder state. Adjust yaw by 
-	yaw += quad_lookup[encoder_state];
+	g_yaw += quad_lookup[encoder_state];
 }
 
 // give the current yaw (quadrature encoded) position in degrees
 int32_t quad_get_degrees(){
-	return 360 * yaw / 224;
+	return 360 * g_yaw / 224;
 }
 

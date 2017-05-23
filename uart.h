@@ -18,7 +18,7 @@
 #include "driverlib/uart.h"
 
 
-#define BAUD_RATE 9600
+#define UART_BAUD_RATE 9600
 #define UART_USB_BASE           UART0_BASE
 #define UART_USB_PERIPH_UART    SYSCTL_PERIPH_UART0
 #define UART_USB_PERIPH_GPIO    SYSCTL_PERIPH_GPIOA
@@ -28,7 +28,7 @@
 #define UART_USB_GPIO_PINS      UART_USB_GPIO_PIN_RX | UART_USB_GPIO_PIN_TX
 
 // Initialise UART output
-int uart_init(void);
+void uart_init(void);
 
 void uart_print(char* message);
 

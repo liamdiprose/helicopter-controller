@@ -32,6 +32,12 @@ typedef struct pwmout_s {
 // Create a PWM output handler
 PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
 
+// Turn the PWM output on
+void pwm_turn_on(PWMOut pin);
+
+// Turn the PWM output off
+void pwm_turn_off(PWMOut pin);
+
 // Set the duty cycle of the pwm output
 int pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle);
 

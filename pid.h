@@ -31,6 +31,6 @@ int pid_derivative_set(PIDConfig* config, float KD);
 
 // Calculate new duty cycle output from PID controller, from target and
 // current reading.
-float pid_update(PIDConfig config, uint32_t target, uint32_t current);
+float pid_update(PIDConfig* config, uint32_t target, uint32_t current);
 
 #endif /* PID_H_ */

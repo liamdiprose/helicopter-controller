@@ -12,14 +12,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
-#define BUTTON_NUM 2
-
-// Define the places of each button used
-#define BUTTON_ALT_UP 0
-#define BUTTON_ALT_DOWN 1
-// #define BUTTON_YAW_UP 2
-// #define BUTTON_YAW_DOWN 3
+#include "driverlib/systick.h"
+#include "driverlib/gpio.h"
+#include "driverlib/systick.h"
 
 #define BUTTON_STATE_PRESSED 1
 #define BUTTON_STATE_RELEASED 0
@@ -27,6 +22,7 @@
 #define BUTTON_CHECK_MS 10		  // TODO: Change
 #define BUTTON_PRESS_THRES_MS 200
 #define BUTTON_COUNT_START 2
+#define BUTTON_NUM 4
 
 
 typedef struct button_s {

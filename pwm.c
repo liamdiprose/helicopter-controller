@@ -12,7 +12,7 @@ PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t out
 				.base = addr_base,
 				.gen = clk_gen,
 				.out = out,
-				.outbit = outbit,
+				.outbit = outbit
 		};
 
 		pwm_frequency_set(&new_pwm_out, 150);
@@ -27,6 +27,15 @@ PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t out
 //	// Link the connector to the PWM generator
 //	GPIOPinConfigure(GPIO_PC5_M0PWM7);
 }
+
+void pwm_turn_on(PWMOut pin) {
+	PWMOutputState(pin.base, pin.outbit, true);
+}
+
+void pwm_turn_off(PWMOut pin) {
+	PWMOutputState(pin.base, pin.outbit, false);
+}
+
 
 // Set the duty cycle of the pwm output
 int pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle) {

@@ -29,6 +29,7 @@ int8_t quad_lookup[16];
 
 //yaw global
 int32_t g_yaw;
+uint8_t encoder_state;
 
 //initialise the quadrature
 void quad_init(void);

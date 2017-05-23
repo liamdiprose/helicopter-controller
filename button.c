@@ -1,11 +1,5 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #include "button.h"
-
-#include "driverlib/gpio.h"
-
 
 
 // Create a button struct

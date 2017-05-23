@@ -10,7 +10,7 @@
 
 // Create a new PID configuration
 PIDConfig pid_init(float KP, float KI, float KD) {
-	PIDConfig config = {KP, KI, KD, 0};
+	PIDConfig config = {KP, KI, KD};
 	return config;
 }
 
@@ -33,12 +33,12 @@ int pid_derivative_set(PIDConfig* config, float KD) {
 }
 
 int pid_target_set(PIDConfig* config, float target) {
-	config->target = target;
+	//config->target = target;
 	return 0;
 }
 
 // Calculate new value from PID controller
-float pid_update(PIDConfig config, uint32_t current) {
+float pid_update(PIDConfig* config, uint32_t target, uint32_t current) {
 	// TODO: Just return the target value for now...
-	return config.target;
+	//return config.target;
 }
