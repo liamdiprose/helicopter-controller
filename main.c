@@ -2,60 +2,45 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/tm4c123gh6pm.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/gpio.h"
-#include "driverlib/timer.h"
-#include "driverlib/systick.h"
 
 #include "button.h"
-
 #include "pwm.h"
 #include "pid.h"
 #include "quad_encoder.h"
-#include "AltitudeADC.h"
+#include "adc.h"
 #include "uart.h"
 #include "display.h"
 
-#define DEBUGGING_MODE 0
-#define DEBUG(...) do {} while (0)
-//#include "debug.h"
+#include "debug.h"
 
+void clock_init(void) {
+	SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+}
 
-// Define the places of each button used
-#define BUTTON_ALT_UP 0
-#define BUTTON_ALT_DOWN 1
-#define BUTTON_YAW_UP 2
-#define BUTTON_YAW_DOWN 3
 
 int main(void) {
 	
-	SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
-	SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
+    clock_init();
 
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB); // quadrature encoder
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC); // PWM Main Rotor
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD); // BTN1 on PIN2
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE); // BTN2 on PIN0
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER3);
+    // Initiase UART
+	uart_init();
+    DEBUG("UART Initialised");
 
-	// Enable PWM Module to generate PWM outputs
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
+	// Initialise buttons
+	Button* button_alt_up = button_init(BUTTON_ALT_UP_PERIPH, BUTTON_ALT_UP_BASE,
+                    BUTTON_ALT_DOWN_PIN);
+	Button* button_alt_down = button_init(BUTTON_ALT_DOWN_PERIPH, BUTTON_ALT_DOWN_BASE,
+                    BUTTON_ALT_DOWN_PIN);
+	Button* button_yaw_left = button_init(BUTTON_YAW_LEFT_PERIPH, BUTTON_YAW_LEFT_BASE,
+                    BUTTON_YAW_RIGHT_PIN);
+	Button* button_yaw_right = button_init(BUTTON_YAW_RIGHT_PERIPH, BUTTON_YAW_RIGHT_BASE,
+                    BUTTON_YAW_RIGHT_PIN);
+    DEBUG("Buttons Initialised");
 
-	while (!SysCtlPeripheralReady(SYSCTL_PERIPH_PWM0));
-	SysCtlDelay(9);  
 
-	// Initialise buttons into global array
-	buttons[BUTTON_ALT_UP] = button_init(GPIO_PORTE_BASE, GPIO_PIN_0);
-	buttons[BUTTON_ALT_DOWN] = button_init(GPIO_PORTD_BASE, GPIO_PIN_2);
-    //buttons[BUTTON_YAW_UP] = button_init(GPIO_PORT);
-    //buttons[BUTTON_YAW_DOWN] = button_init(GPIO_PORT);
-
-	SysTickIntRegister(update_Altitude);
-	//uart_init();
-   // DEBUG("UART Initialised");
-
-	Altitude_init();
+	adc_init();
     DEBUG("ADC Initialised");
+
 	quad_init();
     DEBUG("Quadrature Encoder Initialised");
 
@@ -65,39 +50,41 @@ int main(void) {
 
     //PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit) {
 
-	PWMOut alt_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, PWM_DEFAULT_FREQUENCY );
+	PWMOut alt_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, PWM_DEFAULT_FREQUENCY);
+    pwm_init_gpio(&alt_output, PWM_ALT_GPIO_PERIPH, PWM_ALT_GPIO_BASE, PWM_ALT_GPIO_PIN);
+
 	//PWMOut yaw_output = pwm_init(PWM0_BASE, PWM_GEN_3, PWM_OUT_6, PWM_DEFAULT_FREQUENCY, 0);
     DEBUG("PWM outputs Initialised");
 
 	// Declear variables that hold sensor input
-	uint32_t current_alt = 0;
-	uint32_t current_yaw = 0;
+	uint32_t current_alt;
+	uint32_t current_yaw;
 
     uint32_t previous_alt = 1;
 
     DEBUG("Starting main loop");
 	while (1) {
 		// Copy current height from ADC
-        current_alt = altitude_current;
-        current_yaw = g_yaw;
+        current_alt = alt_get_percentage();
+        current_yaw = quad_get_degrees();
 
         // Ask each button if they have been pressed, and if so,
         // perform specific action assigned to them.
-		if (button_read(&buttons[BUTTON_ALT_UP])) {
+		if (button_read(button_alt_up)) {
                 // Altitude Up button Process
                 DEBUG("Altitude up button pressed. New Altitude: %d"/*, pid_alt->target*/);
 			  //  pid_target_set(&alt_output, pid_alt.target + ALT_INCREMENT);
 
-		} else if (button_read(&buttons[BUTTON_ALT_DOWN])) {
+		} else if (button_alt_down) {
                 DEBUG("Altitude down button pressed. New Altitude: %d"/*, pid_alt->target*/);
 			   // pid_target_set(&pid_alt, pid_alt.target - ALT_DECREMENT);
 		}
 
-		if (button_read(&buttons[BUTTON_YAW_UP])) {
-                DEBUG("Yaw up button pressed. New Yaw: %d"/*, pid_yaw->target*/);
+		if (button_yaw_left) {
+                DEBUG("Yaw left button pressed. New Yaw: %d"/*, pid_yaw->target*/);
 			    //pid_target_set(&pid_yaw, pid_yaw.target + YAW_INCREMENT);
-		} else if (button_read(&buttons[BUTTON_YAW_DOWN])) {
-                DEBUG("Yaw down button pressed. New Yaw: %d"/*, pid_yaw->target*/);
+		} else if (button_yaw_right) {
+                DEBUG("Yaw right button pressed. New Yaw: %d"/*, pid_yaw->target*/);
 			    //pid_target_set(&pid_yaw, pid_yaw.target - YAW_DECREMENT);
 		}
 
