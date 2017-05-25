@@ -35,17 +35,16 @@ typedef struct button_s {
 } Button;
 
 
-Button buttons[BUTTON_NUM];
-
-
-// Check all the buttons in the global list buttons, handling their state changes
-void button_check(void);
+typedef enum {
+        ON_EVENT, ON, OFF_EVENT, OFF
+} ButtonStatus;
 
 // Create a button struct
-Button button_init(uint32_t gpio_base, uint32_t gpio_pin);
+Button button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin);
+
 
 // Return true if button has updated and turned on, false elsewise
-bool button_read(Button* btn);
+ButtonStatus button_read(Button* btn);
 
 
 #endif /* BUTTON_H_ */

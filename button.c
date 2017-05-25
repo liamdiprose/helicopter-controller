@@ -1,10 +1,15 @@
 
 #include "button.h"
 
+Button buttons[BUTTON_NUM];
+uint8_t next_button_index = 0;
 
-// Create a button struct
-Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {
-	// Initialise timer for checking buttons
+// Create a button, and adds it to check list
+Button* button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin) {
+    SysCtlPeripheralEnable(gpio_periph);
+    // Wait for peripheral to be ready
+    while(SysCtlPeripheralReady(gpio_periph));
+
 	SysTickPeriodSet(SysCtlClockGet()/100);
 	SysTickEnable();
 	SysTickIntEnable();
@@ -16,28 +21,17 @@ Button button_init(uint32_t gpio_base, uint32_t gpio_pin) {
 	// Configure input to be GPIO
 	GPIOPinTypeGPIOInput(gpio_base, gpio_pin);
 
-	Button new_button = {gpio_base, gpio_pin, false, BUTTON_COUNT_START, false, false};
+    
+	buttons[next_button_index] = {gpio_base, gpio_pin, false, BUTTON_COUNT_START, false, false};
 
-	return new_button;
+    Button* new_button_ptr = &buttons[next_button_index];
+    next_button_index++;
+
+	return new_button_ptr;
 }
 
 
-//void button_check(void) {
-//	int i;
-//	Button* current_button;
-//	for (i = 0; i < BUTTON_NUM; i++) {
-//			current_button = &buttons[i];
-//			if (GPIOPinRead(current_button->gpio_base, current_button->gpio_pin) > 0) {
-//				current_button->state = 'b';
-//				current_button->updated = 1;
-//			} else {
-//				current_button->state = 0;
-//				current_button->updated = 0;
-//			}
-//	}
-//}
-
-void button_check(void) {
+void button_check_routine(void) {
 	uint32_t i;
 	Button* current_button;
 	bool current_pin_state;
@@ -76,40 +70,23 @@ void button_check(void) {
 	}
 }
 
-// ISR
-// void button_check(void) {
-// 	uint32_t button_index;
-// 	 for (button_index = 0; button_index < 2; button_index++) {
-// 		uint32_t pins = GPIOPinRead(buttons[button_index].gpio_base, buttons[button_index].gpio_pin);
-// 		if (READ_BIT(pins, 0) == 1 && buttons[button_index].butt_state == false)  {
-// 			if (buttons[button_index].num_seq_reads == SEQ_READS_UP) {
-// 				buttons[button_index].num_seq_reads = 0;
-// 				buttons[button_index].butt_state = true;
-// 				buttons[button_index].task_state = true;
-// 			} else  {
-// 				buttons[button_index].num_seq_reads++;
-// 			}
-// 		} else if (READ_BIT(pins, 0) == 1 && buttons[button_index].butt_state == true)  {
-// 			if (buttons[button_index].num_seq_reads == SEQ_READS_DOWN) {
-// 				buttons[button_index].num_seq_reads = 0;
-// 				buttons[button_index].butt_state = false;
-// 				buttons[button_index].task_state = true;
-// 			} else {
-// 				buttons[button_index].num_seq_reads++;
-// 			}
-// 		} else if (READ_BIT(pins, 0) == 0 && buttons[button_index].butt_state == false) {
-// 			buttons[button_index].num_seq_reads = 0;
-// 		} else if (READ_BIT(pins, 0) == 1 && buttons[button_index].butt_state == true) {
-// 			buttons[button_index].num_seq_reads = 0;
-// 		}
-// 	 }
-// }
 
-
-bool button_read(Button* btn) {
+ButtonStatus button_read(Button* btn) {
 	if (btn->updated) {
-		btn->updated = false;
-		return btn->state;
+            btn->updated = false;
+            if (btn->state) {
+                    //ON_EVENT, ON, OFF_EVENT, OFF
+                    return ON_EVENT;
+            } else {
+                    return OFF_EVENT;
+            }
+    } else {
+            if (btn->state) {
+                    return ON;
+            } else {
+                    return OFF;
+            }
 	}
-	return false;
+	return btn->state;
 }
+
