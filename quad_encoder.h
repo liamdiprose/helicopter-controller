@@ -15,6 +15,8 @@
 #include "driverlib/gpio.h"
 #include "inc/hw_memmap.h"
 
+#define QUAD_GPIO_PERIPH SYSCTL_PERIPH_GPIOB
+
 #define QUAD_GPIO_BASE GPIO_PORTB_BASE
 #define QUAD_GPIO_PIN_0 GPIO_PIN_0
 #define QUAD_GPIO_PIN_1 GPIO_PIN_1
@@ -24,18 +26,9 @@
 #define QUAD_GPIO_INT_PIN_1 GPIO_INT_PIN_1
 #define QUAD_GPIO_INT_PINS (QUAD_GPIO_INT_PIN_0 | QUAD_GPIO_INT_PIN_1)
 
-// Lookup table for quadrature encoder
-int8_t quad_lookup[16];
-
-//yaw global
-int32_t g_yaw;
-uint8_t encoder_state;
 
 //initialise the quadrature
 void quad_init(void);
-
-//interrupt to be registered
-void quad_measure(void);
 
 // give the current yaw (quadrature encoded) position in degrees
 int32_t quad_get_degrees();

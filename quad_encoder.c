@@ -7,8 +7,15 @@
 
 #include "quad_encoder.h"
 
-//initialise the quadrature
-void quad_init(void) {
+// Lookup table for quadrature encoder
+int8_t quad_lookup[16];
+
+// File globals
+int32_t g_yaw;
+uint8_t encoder_state;
+
+// Initialise Quadrature Encoder
+void quad_init() {
 	g_yaw = 0;
 	encoder_state = 0;
 	quad_lookup[0] = 0;
@@ -28,20 +35,22 @@ void quad_init(void) {
 	quad_lookup[14] = -1;
 	quad_lookup[15] = 0;
 
+    SysCtlPeripheralEnable(QUAD_GPIO_PERIPH);
+    while(!SysCtlPeripheralReady(QUAD_GPIO_PERIPH));
+
 	GPIOPinTypeGPIOInput(QUAD_GPIO_BASE, QUAD_GPIO_PINS);
 	//Add the interrupt to the table
-	GPIOIntRegister(QUAD_GPIO_BASE, quad_measure);
+	GPIOIntRegister(QUAD_GPIO_BASE, quad_update_measure);
 	// Set the interrupt to trigger on both edges of the pulse
 	GPIOIntTypeSet(QUAD_GPIO_BASE, QUAD_GPIO_PINS, GPIO_BOTH_EDGES);
 	GPIOIntEnable(QUAD_GPIO_BASE, QUAD_GPIO_PINS); 
 }
 
-
-void quad_measure (void) {
+// Interrupt Routine. Runs on pin state change
+void quad_update_routine (void) {
 
 	GPIOIntClear(QUAD_GPIO_BASE, QUAD_GPIO_PINS);
-	uint32_t current_inputs = GPIOPinRead(GPIO_PORTB_BASE, 
-                    GPIO_PIN_0 | GPIO_PIN_1);
+	uint32_t current_inputs = GPIOPinRead(QUAD_GPIO_BASE, QUAD_GPIO_PINS);
     
     // Construct state of quadrature encoder from combination of previous and 
     // current values of input channels.
