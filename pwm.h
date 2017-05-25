@@ -1,10 +1,3 @@
-/*
- * pwm.h
- *
- *  Created on: Mar 22, 2017
- *      Author: ldi30
- */
-
 #ifndef PWM_H_
 #define PWM_H_
 
@@ -16,9 +9,11 @@
 #include "driverlib/gpio.h"
 #include "driverlib/pwm.h"
 
-
 #define PWM_DEFAULT_FREQUENCY 150
-#define DEFAULT_DUTY_CYCLE 0.5
+#define PWM_DEFAULT_DUTY_CYCLE 0.5
+
+#define PWM_STATE_ON true
+#define PWM_STATE_OFF false
 
 typedef struct pwmout_s {
 	uint32_t base;
@@ -30,21 +25,17 @@ typedef struct pwmout_s {
 } PWMOut;
 
 // Create a PWM output handler
-PWMOut pwm_init(uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
+PWMOut pwm_init(uint32_t pwm_periph, uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
+
+void pwm_init_gpio(PWMOut* pwm_out, uint32_t gpio_periph, uint32_t gpio_port, uint32_t gpio_pin_conf);
 
 // Turn the PWM output on
-void pwm_turn_on(PWMOut pin);
-
-// Turn the PWM output off
-void pwm_turn_off(PWMOut pin);
+void pwm_set_state(PWMOut pin, bool new_state);
 
 // Set the duty cycle of the pwm output
-int pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle);
+void pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle);
 
 // Set the frequncy of the pwm output
-int pwm_frequency_set(PWMOut* pin, uint32_t frequency);
-
-
-
+void pwm_frequency_set(PWMOut* pin, uint32_t frequency);
 
 #endif /* PWM_H_ */
