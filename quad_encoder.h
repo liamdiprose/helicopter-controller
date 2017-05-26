@@ -1,17 +1,11 @@
-/*
- * quad_encoder.h
- *
- *  Created on: Apr 27, 2017
- *      Author: and22
- */
-
-
 #ifndef QUAD_ENCODER_H_
 #define QUAD_ENCODER_H_
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "inc/hw_memmap.h"
 

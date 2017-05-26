@@ -7,6 +7,9 @@
 
 #include "quad_encoder.h"
 
+// Forward Declearation Table for ISR's
+void quad_update_routine(void);
+
 // Lookup table for quadrature encoder
 int8_t quad_lookup[16];
 
@@ -15,7 +18,7 @@ int32_t g_yaw;
 uint8_t encoder_state;
 
 // Initialise Quadrature Encoder
-void quad_init() {
+void quad_init(void) {
 	g_yaw = 0;
 	encoder_state = 0;
 	quad_lookup[0] = 0;
@@ -40,7 +43,7 @@ void quad_init() {
 
 	GPIOPinTypeGPIOInput(QUAD_GPIO_BASE, QUAD_GPIO_PINS);
 	//Add the interrupt to the table
-	GPIOIntRegister(QUAD_GPIO_BASE, quad_update_measure);
+	GPIOIntRegister(QUAD_GPIO_BASE, quad_update_routine);
 	// Set the interrupt to trigger on both edges of the pulse
 	GPIOIntTypeSet(QUAD_GPIO_BASE, QUAD_GPIO_PINS, GPIO_BOTH_EDGES);
 	GPIOIntEnable(QUAD_GPIO_BASE, QUAD_GPIO_PINS); 

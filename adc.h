@@ -18,6 +18,7 @@
 #include "driverlib/pin_map.h"
 #include "driverlib/sysctl.h"
 #include "utils/ustdlib.h"
+#include "driverlib/systick.h"
 
 
 #define ALT_NEW_RATIO 0.7

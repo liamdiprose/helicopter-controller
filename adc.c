@@ -12,12 +12,12 @@ void adc_init(void){
 	SysCtlPeripheralEnable(ADC_GPIO_PERIPH);
 	SysCtlPeripheralEnable(ADC_ADC_PERIPH);
 
-	GPIOPinTypeADC(ADC_GPIO_PERIPH, ADC_GPIO_PIN);
+	GPIOPinTypeADC(ADC_GPIO_BASE, ADC_GPIO_PIN);
 
 	ADCSequenceStepConfigure(ADC_ADC_BASE, 3, 0, ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
 	ADCSequenceEnable(ADC_ADC_BASE, 3);
 
-	uint32_t altitude_hold[0]=0;
+	//uint32_t altitude_hold[0]=0;
 	g_adc_current = 0;
 	SysTickIntRegister(adc_update_routine);
 	//uint32_t bottom_altitude_hold[0]=0;
@@ -40,6 +40,9 @@ void adc_init(void){
 
 void adc_update_routine(void) {
 	//ADCIntClear(ADC0_BASE, 3);
+
+	uint32_t altitude_hold[1];
+
 	ADCProcessorTrigger(ADC0_BASE, 3);
 	//while(!ADCIntStatus(ADC0_BASE, 3, false));
 	ADCSequenceDataGet(ADC0_BASE, 3, altitude_hold);

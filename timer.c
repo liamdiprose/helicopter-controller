@@ -7,12 +7,12 @@
 
 #include "timer.h"
 
-uint32_t millis = 0;
-uint32_t lap = 0;
+uint32_t g_millis = 0;
+uint32_t g_lap = 0;
 
 void timer_ms_routine(void) {
 	  TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-	  millis++;
+	  g_millis++;
 }
 
 
@@ -35,22 +35,22 @@ void timer_init(void) {
 // Get amount of milliseconds since the timer was cleared.
 uint32_t timer_get_millis(void) {
 
-	return millis;
+	return g_millis;
 
 }
 
 // Set the timer to 0
 void timer_clear(void) {
-	millis = 0;
+	g_millis = 0;
 }
 
 
 // Set a marker for a new lap
 void timer_set_lap(void) {
-	lap = millis;
+	g_lap = g_millis;
 }
 
 // Get time since last lap
 uint32_t timer_get_lap(void) {
-	return millis - lap;
+	return g_millis - g_lap;
 }

@@ -3,13 +3,13 @@
 
 
 // Create a PWM output 
-PWMOut pwm_init(uint32_t gpio_periph, uint32_t pwm_periph, uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit) {
+PWMOut pwm_init(uint32_t pwm_periph, uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit) {
 
         SysCtlPeripheralEnable(pwm_periph);
-	    SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
-
         while(!SysCtlPeripheralReady(pwm_periph));
 
+        // Prescale the PWM Clock by 8
+	    SysCtlPWMClockSet(SYSCTL_PWMDIV_8);
 
 		PWMGenConfigure(addr_base, clk_gen, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
 		PWMGenEnable(addr_base, clk_gen);
@@ -45,7 +45,7 @@ void pwm_set_state(PWMOut pin, bool new_state) {
 
 // Set the duty cycle of the pwm output
 void pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle) {
-		uint32_t new_pulse_width = pin->period * ( (float) duty_cycle / 100 )
+		uint32_t new_pulse_width = pin->period * ( (float) duty_cycle / 100 );
 
 		PWMPulseWidthSet(pin->base, pin->out, new_pulse_width);
         pin->duty_cycle = new_pulse_width;

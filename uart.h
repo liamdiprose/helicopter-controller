@@ -11,14 +11,19 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>  // Allow print to take multiple parameters (printf like functionality)
 
 #include "inc/hw_memmap.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 #include "driverlib/uart.h"
 
+#include "utils/ustdlib.h"
+#include "driverlib/pin_map.h"
 
-#define UART_BAUD_RATE 9600
+
+
+#define UART_BAUD_RATE			9600
 #define UART_USB_BASE           UART0_BASE
 #define UART_USB_PERIPH_UART    SYSCTL_PERIPH_UART0
 #define UART_USB_PERIPH_GPIO    SYSCTL_PERIPH_GPIOA
@@ -31,5 +36,6 @@
 void uart_init(void);
 
 void uart_print(char* message);
+
 
 #endif /* UART_H_ */

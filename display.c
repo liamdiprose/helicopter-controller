@@ -2,7 +2,7 @@
 #include "display.h"
 
 // Initialise display
-int display_init(void) {
+void display_init(void) {
 	OLEDInitialise();
 }
 

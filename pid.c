@@ -10,7 +10,7 @@
 
 // Create a new PID configuration
 PIDConfig pid_init(float KP, float KI, float KD) {
-	PIDConfig config = {KP, KI, KD};
+	PIDConfig config = {KP, KI, KD, 0};
 	return config;
 }
 

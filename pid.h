@@ -15,6 +15,7 @@ typedef struct PID_config_s {
 	float P;
 	float I;
 	float D;
+	float target;
 } PIDConfig;
 
 // Create a new PID configuration
