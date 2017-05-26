@@ -8,12 +8,9 @@ uint8_t next_button_index = 0;
 // Forward Declearation of ISR's
 void button_check_routine(void);
 
-void button_init(void){} // TODO: Remove
-
-//bool unlocked = false;
 
 // Create a button, and adds it to check list
-Button* button_create(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin, ButtonPullDirection pull_direction) {
+Button* button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin, ButtonPullDirection pull_direction) {
 
 	SysCtlPeripheralEnable(gpio_periph);
 	// Port F is already enabled, as it had to be unlocked
@@ -29,19 +26,21 @@ Button* button_create(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pi
 	// Configure input to be GPIO
 	GPIOPinTypeGPIOInput(gpio_base, gpio_pin);
 
+
+	Button new_button;
 	// Configure Pad to pull high when button disconnected
-	uint32_t btn_pull_direction;
 	if (pull_direction == PULL_DOWN) {
-		btn_pull_direction = GPIO_PIN_TYPE_STD_WPU;
+		GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+		new_button = (Button) {gpio_base, gpio_pin, pull_direction, 0, BUTTON_STATE_RELEASED, 0};
 	} else if (pull_direction == PULL_UP) {
-		btn_pull_direction = GPIO_PIN_TYPE_STD_WPD;
+		GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
+		new_button = (Button) {gpio_base, gpio_pin, pull_direction, BUTTON_COUNT_START, BUTTON_STATE_PRESSED, 0};
 	} else {
-		btn_pull_direction = GPIO_PIN_TYPE_STD;
+		GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+		new_button = (Button) {gpio_base, gpio_pin, pull_direction, BUTTON_COUNT_START, BUTTON_STATE_PRESSED, 0};
 	}
 
-	GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, btn_pull_direction);
 
-	Button new_button = {gpio_base, gpio_pin, btn_pull_direction, 0, BUTTON_STATE_RELEASED, 0};
 	buttons[next_button_index] = new_button;
 
     Button* new_button_ptr = &buttons[next_button_index];

@@ -1,10 +1,3 @@
-/*
- * AltitudeADC.h
- *
- *  Created on: May 7, 2017
- *      Author: and22
- */
-
 #ifndef ALTITUDEADC_H_
 #define ALTITUDEADC_H_
 
@@ -39,7 +32,4 @@ void adc_update_routine(void);
 // Get the latest ADC value in percentage 
 uint32_t adc_get_percent(void);
 
-
 #endif /* ALTITUDEADC_H_ */
-
-

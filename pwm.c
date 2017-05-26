@@ -31,10 +31,11 @@ PWMOut pwm_init(uint32_t pwm_periph, uint32_t addr_base, uint32_t clk_gen, uint3
 }
 
 // Initialise GPIO output for PWM generator
-void pwm_init_gpio(PWMOut* pwm_out, uint32_t gpio_periph, uint32_t gpio_port, uint32_t gpio_pin_conf) {
-        SysCtlPeripheralEnable(gpio_periph);
-        while(!SysCtlPeripheralReady(gpio_periph));
-        GPIOPinConfigure(gpio_pin_conf);
+void pwm_init_gpio(PWMOut* pwm_out, uint32_t periph, uint32_t port, uint32_t pin, uint32_t pin_conf) {
+        SysCtlPeripheralEnable(periph);
+        while(!SysCtlPeripheralReady(periph));
+        GPIOPinTypePWM(port, pin);
+        GPIOPinConfigure(pin_conf);
 }
 
 // Turn the PWM on or off

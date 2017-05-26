@@ -16,6 +16,6 @@ void display_update_yaw(int yaw) {
 // Update altitude reading on OLED display
 void display_update_alt(int altitude) {
 	char line[24];
-	usprintf(line, "Alt: %d%%-24s", altitude);
+	usprintf(line, "Alt: %d%%         ", altitude);
 	OLEDStringDraw(line, 0, 1);
 }

@@ -1,10 +1,3 @@
-/*
- * button.h
- *
- *  Created on: Mar 23, 2017
- *      Author: ldi30
- */
-
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
@@ -50,13 +43,11 @@ typedef struct button_s {
 
 
 
-// Setup button module
-void button_init(void);
 
 void button_check_routine(void);
 
 // Create a button struct
-Button* button_create(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin, ButtonPullDirection pull_direction);
+Button* button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin, ButtonPullDirection pull_direction);
 
 
 // Return true if button has updated and turned on, false elsewise

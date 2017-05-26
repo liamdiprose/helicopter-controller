@@ -27,7 +27,7 @@ typedef struct pwmout_s {
 // Create a PWM output handler
 PWMOut pwm_init(uint32_t pwm_periph, uint32_t addr_base, uint32_t clk_gen, uint32_t out, uint32_t outbit);
 
-void pwm_init_gpio(PWMOut* pwm_out, uint32_t gpio_periph, uint32_t gpio_port, uint32_t gpio_pin_conf);
+void pwm_init_gpio(PWMOut* pwm_out, uint32_t periph, uint32_t port, uint32_t pin, uint32_t pin_conf);
 
 // Turn the PWM output on
 void pwm_set_state(PWMOut pin, bool new_state);

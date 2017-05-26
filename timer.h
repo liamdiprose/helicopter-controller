@@ -1,10 +1,3 @@
-/*
- * timer.h
- *
- *  Created on: May 25, 2017
- *      Author: ldi30
- */
-
 #ifndef TIMER_H_
 #define TIMER_H_
 

@@ -8,7 +8,7 @@
 
 uint32_t g_adc_current;
 
-void adc_init(void){
+void adc_init(void) {
 	SysCtlPeripheralEnable(ADC_GPIO_PERIPH);
 	SysCtlPeripheralEnable(ADC_ADC_PERIPH);
 
@@ -19,7 +19,7 @@ void adc_init(void){
 
 	//uint32_t altitude_hold[0]=0;
 	g_adc_current = 0;
-	SysTickIntRegister(adc_update_routine);
+
 	//uint32_t bottom_altitude_hold[0]=0;
 	//uint32_t bottom_altitude_current=0;
     // TODO: Move calibration to own procedure in main.c
@@ -55,5 +55,5 @@ void adc_update_routine(void) {
 
 // Get the latest ADC value in percentage
 uint32_t adc_get_percent(void) {
-        return g_adc_current;
+        return ((float) g_adc_current / 4094 ) * 100;
 }
