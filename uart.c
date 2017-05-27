@@ -2,7 +2,6 @@
 #include "uart.h"
 
 
-
 void uart_init(void) {
 	SysCtlPeripheralEnable(UART_USB_PERIPH_UART);
 	SysCtlPeripheralEnable(UART_USB_PERIPH_GPIO);
@@ -15,12 +14,10 @@ void uart_init(void) {
 	UARTStdioConfig(0, UART_BAUD_RATE, SysCtlClockGet());
 }
 
-// TODO: use <stdarg.h> to support undefined amount of parameters,
-// then pass it to usprintf?
+
 void uart_print(char* message) {
 //	while(*message) {
 //		UARTCharPut(UART_USB_BASE, *message);
 //		message++;
 //	}
 }
-
