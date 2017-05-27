@@ -9,8 +9,9 @@
 #include "driverlib/gpio.h"
 #include "driverlib/pwm.h"
 
-#define PWM_DEFAULT_FREQUENCY 150
-#define PWM_DEFAULT_DUTY_CYCLE 0.5
+
+#define PWM_DUTY_CYCLE_MAX 98
+#define PWM_DUTY_CYCLE_MIN 2
 
 #define PWM_STATE_ON true
 #define PWM_STATE_OFF false

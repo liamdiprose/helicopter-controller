@@ -46,8 +46,14 @@ void pwm_set_state(PWMOut pin, bool new_state) {
 
 // Set the duty cycle of the pwm output
 void pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle) {
-		uint32_t new_pulse_width = pin->period * ( (float) duty_cycle / 100 );
+		// Cap output to protect rotor motors
+		if (duty_cycle > PWM_DUTY_CYCLE_MAX) {
+			duty_cycle = PWM_DUTY_CYCLE_MAX;
+		} else if (duty_cycle < PWM_DUTY_CYCLE_MIN) {
+			duty_cycle = PWM_DUTY_CYCLE_MIN;
+		}
 
+		uint32_t new_pulse_width = pin->period * ( (float) duty_cycle / 100 );
 		PWMPulseWidthSet(pin->base, pin->out, new_pulse_width);
         pin->duty_cycle = new_pulse_width;
 }
