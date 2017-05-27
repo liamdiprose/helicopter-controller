@@ -12,6 +12,8 @@ void adc_init(void) {
 	SysCtlPeripheralEnable(ADC_GPIO_PERIPH);
 	SysCtlPeripheralEnable(ADC_ADC_PERIPH);
 
+	while(!SysCtlPeripheralReady(ADC_GPIO_PERIPH));
+	while(!SysCtlPeripheralReady(ADC_ADC_PERIPH));
 	GPIOPinTypeADC(ADC_GPIO_BASE, ADC_GPIO_PIN);
 
 	ADCSequenceStepConfigure(ADC_ADC_BASE, 3, 0, ADC_CTL_CH9 | ADC_CTL_IE | ADC_CTL_END);
