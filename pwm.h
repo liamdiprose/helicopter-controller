@@ -10,8 +10,8 @@
 #include "driverlib/pwm.h"
 
 
-#define PWM_DUTY_CYCLE_MAX 98
-#define PWM_DUTY_CYCLE_MIN 2
+#define PWM_DUTY_CYCLE_MAX 80
+#define PWM_DUTY_CYCLE_MIN 20
 
 #define PWM_STATE_ON true
 #define PWM_STATE_OFF false

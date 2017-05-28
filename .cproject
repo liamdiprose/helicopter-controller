@@ -131,7 +131,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="circBufT.c|Waveform_analysis_with_OLED.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

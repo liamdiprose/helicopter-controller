@@ -25,6 +25,6 @@ PIDConfig pid_init(float KP, float KI, float KD);
 
 // Calculate new duty cycle output from PID controller, from target and
 // current reading.
-float pid_update(PIDConfig* config, uint32_t error, float dt);
+uint32_t pid_update(PIDConfig* config, uint32_t error, float dt);
 
 #endif /* PID_H_ */

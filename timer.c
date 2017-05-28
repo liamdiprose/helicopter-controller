@@ -7,6 +7,8 @@
 
 #include "timer.h"
 
+#define MAX_UINT32 0x7FFFFFFF
+
 uint32_t g_millis = 0;
 uint32_t g_lap = 0;
 
@@ -18,37 +20,35 @@ void timer_ms_routine(void) {
 
 void timer_init(void) {
 
-	uint32_t period = SysCtlClockGet()/1000;  // 1 ms
 
 	SysCtlPeripheralEnable(TIMER_PERIPH);
 	while(!SysCtlPeripheralReady(TIMER_PERIPH));
 
-	TimerConfigure(TIMER_BASE, TIMER_CFG_PERIODIC);
+	TimerConfigure(TIMER_BASE, TIMER_CFG_PERIODIC_UP);
+	TimerClockSourceSet(TIMER_BASE, TIMER_CLOCK_SYSTEM);
+	//TimerPrescaleSet(TIMER_BASE, TIMER_A, 255);
 
-	TimerLoadSet(TIMER_BASE, TIMER_A, period-1);
-
-	TimerIntRegister(TIMER_BASE, TIMER_A, timer_ms_routine);
-	TimerIntEnable(TIMER_BASE, TIMER_TIMA_TIMEOUT);
+	TimerLoadSet(TIMER_BASE, TIMER_A, MAX_UINT32);
 
 	TimerEnable(TIMER_BASE, TIMER_A);
 }
 
 // Get amount of milliseconds since the timer was cleared.
 uint32_t timer_get_millis(void) {
-	return g_millis;
+	return TimerValueGet(TIMER_BASE, TIMER_A) / (SysCtlClockGet()/1000000);
 }
 
 // Set the timer to 0
 void timer_clear(void) {
-	g_millis = 0;
+	//TimerValueSet(TIMER_BASE, TIMER_A, 0);
 }
 
 // Set a marker for a new lap
 void timer_set_lap(void) {
-	g_lap = g_millis;
+	g_lap = timer_get_millis();
 }
 
 // Get time since last lap
 uint32_t timer_get_lap(void) {
-	return g_millis - g_lap;
+	return timer_get_millis() - g_lap;
 }
