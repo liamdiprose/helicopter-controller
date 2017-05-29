@@ -57,5 +57,5 @@ void adc_update_routine(void) {
 
 // Get the latest ADC value in percentage
 uint32_t adc_get_percent(void) {
-        return ((float) g_adc_current / 4094 ) * 100;
+        return 100 * (g_adc_current / (float) 4094.0);
 }

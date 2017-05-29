@@ -9,9 +9,11 @@
 #include "driverlib/gpio.h"
 #include "driverlib/pwm.h"
 
-
-#define PWM_DUTY_CYCLE_MAX 80
-#define PWM_DUTY_CYCLE_MIN 20
+#define PWM_DEFAULT_FREQUENCY 200
+// Snap DC to multiples of this number to prevent jittering
+#define PWM_DC_PEROID_SNAP 5
+#define PWM_DUTY_CYCLE_MAX 0.9
+#define PWM_DUTY_CYCLE_MIN 0.02
 
 #define PWM_STATE_ON true
 #define PWM_STATE_OFF false
@@ -22,7 +24,7 @@ typedef struct pwmout_s {
 	uint32_t out;
 	uint32_t outbit;
 	uint32_t period;
-	uint8_t duty_cycle;
+	float duty_cycle;
 } PWMOut;
 
 // Create a PWM output handler
@@ -34,7 +36,7 @@ void pwm_init_gpio(PWMOut* pwm_out, uint32_t periph, uint32_t port, uint32_t pin
 void pwm_set_state(PWMOut pin, bool new_state);
 
 // Set the duty cycle of the pwm output
-void pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle);
+void pwm_duty_cycle_set(PWMOut* pin, float duty_cycle);
 
 // Set the frequncy of the pwm output
 void pwm_frequency_set(PWMOut* pin, uint32_t frequency);

@@ -10,7 +10,6 @@
 #define PID_H_
 
 
-
 typedef struct PID_config_s {
 	float KP;
 	float KI;
@@ -22,9 +21,10 @@ typedef struct PID_config_s {
 // Create a new PID configuration
 PIDConfig pid_init(float KP, float KI, float KD);
 
+void pid_clear_errors(PIDConfig* config);
 
 // Calculate new duty cycle output from PID controller, from target and
 // current reading.
-uint32_t pid_update(PIDConfig* config, uint32_t error, float dt);
+float pid_update(PIDConfig* config, int32_t error, float dt);
 
 #endif /* PID_H_ */

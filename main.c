@@ -101,7 +101,7 @@ enum calibration_states {
 
 
 void clock_init(void) {
-	SysCtlClockSet (SYSCTL_SYSDIV_10 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 }
 
 void all_the_routines(void) {
@@ -145,8 +145,8 @@ int main(void) {
     DEBUG("Quadrature Encoder Initialised");
 
     // Create PID controllers
-	PIDConfig pid_alt = pid_init(0.7, 0, 1);
-    PIDConfig pid_yaw = pid_init(0.01, 0, 0.001);
+	PIDConfig pid_alt = pid_init(0.02, 0.006, 0);
+    PIDConfig pid_yaw = pid_init(1.5, 0.001, 0.05);//  0.0002, 0.00000005);
     DEBUG("PID Controllers Initialised");
 
     // Create PWM outputs to control rotors
@@ -164,6 +164,8 @@ int main(void) {
     // Initialise Variable to track state of program FSM
     ProgramState program_state = LANDED;
 
+
+
     // Save events of flight mode switch
     ButtonStatus flight_mode;
 
@@ -175,21 +177,22 @@ int main(void) {
 
 	// Declear variables for controllers
     bool controllers_enabled = false;
-	uint32_t current_alt;
-	uint32_t current_yaw;
+	int32_t current_alt = 0;
+	int32_t current_yaw = 0;
 	uint32_t target_alt = 0;
-	uint32_t target_yaw = 0;
+	int32_t target_yaw = 0;
 	int32_t alt_error;
 	int32_t yaw_error;
-	uint32_t alt_dc;
-	uint32_t yaw_dc;
-	uint32_t old_alt_dc = 0;
-	uint32_t old_yaw_dc = 0;
+	float alt_dc;
+	float yaw_dc;
+	float old_alt_dc = 0;
+	float old_yaw_dc = 0;
 
 	float time_delta = 0.001;
 
 	// Save variables to detect changes inbetween loops
     uint32_t previous_alt = 1;
+    int32_t previous_yaw = 1;
 
 
     SysTickIntRegister(all_the_routines);
@@ -199,6 +202,8 @@ int main(void) {
 	uint32_t last_loop = timer_get_millis();
 
     DEBUG("Startup completed in %d ms", timer_get_millis());
+    UARTprintf("aP:%d,aI:%d,aD:%d\n", pid_alt.KP, pid_alt.KI, pid_alt.KD);
+    UARTprintf("yP:%d,yI:%d,yD:%d\n", pid_yaw.KP, pid_yaw.KI, pid_yaw.KD);
 	while (1) {
 		// Copy current height from ADC
 		if (calibrated) {
@@ -208,6 +213,10 @@ int main(void) {
 		}
         current_yaw = quad_get_degrees();
 
+//        if (current_yaw < 0) {
+//        	current_yaw = current_yaw * -1;
+//        }
+
 		flight_mode = button_status(button_flight_mode);
 
 		switch ( program_state ) {
@@ -216,20 +225,13 @@ int main(void) {
 				switch ( calibration_state ) {
 				case CALIBRATE_HEIGHT: {
 						altitude_low = current_alt;  // TODO: Samples
+						pid_clear_errors(&pid_alt);
+						pid_clear_errors(&pid_yaw);
+						controllers_enabled = false;
 						DEBUG("Calibrating height, lowest height is %d%%", altitude_low);
 						program_state = LANDED;
 						calibrated = true;
 					}
-				}
-
-				pwm_duty_cycle_set(&yaw_output, 2 + 10 * ((float) timer_get_lap()/1000));
-
-				if (2 + 10 * ((float) timer_get_lap()/1000) > 30) {
-					DEBUG("Calibration Completed in %d ms. Landed", timer_get_lap());
-					pwm_set_state(alt_output, false);
-					pwm_set_state(yaw_output, false);
-					calibrated = true;
-					program_state = LANDED;
 				}
 			} break;
 			case LANDED: {
@@ -276,7 +278,7 @@ int main(void) {
 				}
 				if (button_status(button_yaw_left) == PRESS_EVENT) {
 		                DEBUG("Yaw left button pressed");
-		                if (target_alt < 360) {
+		                if (target_yaw < 360) {
 		                	target_yaw += YAW_STEP;
 		                }
 				}
@@ -293,16 +295,21 @@ int main(void) {
 					DEBUG("Landing abort. Flying");
 
 					// Seize Movement
-					target_alt = current_alt;
-					target_yaw = current_yaw;
+					target_alt = current_alt < 0 ? 0 : current_alt;
+					target_yaw = 0;
 
 					program_state = FLYING;
 					break;
 				}
 				if (current_alt < altitude_low + 10) {
 					DEBUG("Landed");
+					target_alt = 0;
+					target_yaw = current_yaw;
+
 					pwm_set_state(alt_output, false);
 					pwm_set_state(yaw_output, false);
+					pid_clear_errors(&pid_alt);
+					pid_clear_errors(&pid_yaw);
 					controllers_enabled = false;
 					program_state = LANDED;
 				}
@@ -311,27 +318,31 @@ int main(void) {
 
 		if (controllers_enabled) {
 			// Plug controllers into rotors
-			time_delta = 0.001; //((float) timer_get_lap() / 1000000);
+			time_delta = ((float) timer_get_lap() / 1000000);
 
 			alt_error = target_alt - current_alt;
 
-			if (alt_error < 0) {
-				alt_error = 0;
-			}
+			yaw_error = target_yaw - current_yaw;
 
-			yaw_error = target_yaw - (current_yaw % 224);
-
-			if (yaw_error > 180) {
-				yaw_error = 180 - yaw_error;
-			}
+//			if (yaw_error > 180) {
+//				yaw_error = 360 - yaw_error;
+//			}
+//			if (yaw_error < -180) {
+//				yaw_error = yaw_error + 360;
+//			}
 
 			alt_dc = pid_update(&pid_alt, alt_error, time_delta);
+
+			float alt_diff =0;
+
 			if (alt_dc != old_alt_dc) {
 				pwm_duty_cycle_set(&alt_output, alt_dc);
+				alt_diff = (alt_dc - old_alt_dc)/old_alt_dc;
 				old_alt_dc = alt_dc;
 			}
 			yaw_dc = pid_update(&pid_yaw, yaw_error, time_delta);
 			if (yaw_dc != old_yaw_dc) {
+				yaw_dc *= 1 + 0.005 * alt_diff;
 				pwm_duty_cycle_set(&yaw_output, yaw_dc);
 				old_yaw_dc = yaw_dc;
 			}
@@ -339,30 +350,38 @@ int main(void) {
 			timer_set_lap();
 		}
 
-        if (current_alt != previous_alt) {
-        	  if (timer_get_millis() % 100 == 0) {
+        if (current_alt != previous_alt || current_yaw != previous_yaw) {
+        	  if (timer_get_millis() % 10000 == 0) {
 				// UART print round, format data for the humans
-				display_update_alt(current_alt);
+				display_update_alt(current_alt, target_alt);
 				previous_alt = current_alt;
+				display_update_yaw(current_yaw, target_yaw);
+				previous_yaw = current_yaw;
         	  }
         }
 
-        if (timer_get_millis()/1000 % 1000 == 0) {
+        if (timer_get_millis()/1000 % 500 == 0) {
 
         	// Target Yaw, Actual Yaw, Target Altitude, Actual Altitude, Tail Rotor Duty Cycle, Main Rotor Duty Cycle, Operating Mode
 
         //	CSV_STATUS(target_yaw, current_yaw, target_alt, current_alt,  yaw_output.duty_cycle,
 		//			alt_output.duty_cycle, program_state);
 
-//        	alt_dc = 100 * ((float) alt_output.duty_cycle / alt_output.period);
-//        	yaw_dc = 100 * ((float) yaw_output.duty_cycle / yaw_output.period);
+        	int32_t p_alt_dc = (uint32_t) (alt_output.duty_cycle * 100) + 0.30;
+        	int32_t p_yaw_dc = (uint32_t) (yaw_output.duty_cycle * 100) + 0.30;
+        	int32_t p_cyaw = current_yaw;
 
         	uint32_t milliseconds = time_delta*1000000;
 
-        	UARTprintf("T:%d [A:%d t:%d e:%d] [Y:%d t:%d e:%d] Tdc:%d Mdc:%d TD:%d\n", timer_get_millis(), current_alt, target_alt, alt_error, current_yaw, target_yaw, yaw_error, yaw_dc, alt_dc, milliseconds);
-    		if (alt_dc > 1000) {
-    			DEBUG("Altitude DC excedded 1000%%. e:%d dt:%d", alt_error, milliseconds);
-			}
+//        	return config->KP * error
+//        				+ config->KI * (config->I_error * dt)
+//        				+ config->KD * (config->D_error / dt);
+
+        	UARTprintf("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", timer_get_millis(), current_alt, target_alt, alt_error, p_alt_dc, p_cyaw, target_yaw, yaw_error, p_yaw_dc);
+        	//UARTprintf("T:%d [A:%d t:%d e:%d dc:%d ie:%d] [Y:%d t:%d e:%d dc:%d] TD:%d\n", timer_get_millis(), current_alt, target_alt, alt_error, p_alt_dc, p_ierr, current_yaw, target_yaw, yaw_error, p_yaw_dc, milliseconds);
+
+
+        	//UARTprintf("Mdc:%d = %d * (c%d - t%d) + %d * %d * %d\r\n", alt_dc, p_kp, current_alt, target_alt, p_ki, p_ierr, milliseconds);
         }
 
 	}

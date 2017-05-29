@@ -21,8 +21,7 @@ PWMOut pwm_init(uint32_t pwm_periph, uint32_t addr_base, uint32_t clk_gen, uint3
 				.outbit = outbit
 		};
 
-		pwm_frequency_set(&new_pwm_out, 150);
-		pwm_duty_cycle_set(&new_pwm_out, 50);
+		pwm_frequency_set(&new_pwm_out, PWM_DEFAULT_FREQUENCY);
 
 		PWMOutputState(addr_base, outbit, false);
 
@@ -45,7 +44,7 @@ void pwm_set_state(PWMOut pin, bool new_state) {
 
 
 // Set the duty cycle of the pwm output
-void pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle) {
+void pwm_duty_cycle_set(PWMOut* pin, float duty_cycle) {
 		// Cap output to protect rotor motors
 		if (duty_cycle > PWM_DUTY_CYCLE_MAX) {
 			duty_cycle = PWM_DUTY_CYCLE_MAX;
@@ -53,9 +52,10 @@ void pwm_duty_cycle_set(PWMOut* pin, uint8_t duty_cycle) {
 			duty_cycle = PWM_DUTY_CYCLE_MIN;
 		}
 
-		uint32_t new_pulse_width = pin->period * ( (float) duty_cycle / 100 );
+		uint32_t new_pulse_width = pin->period * duty_cycle;
+
 		PWMPulseWidthSet(pin->base, pin->out, new_pulse_width);
-        pin->duty_cycle = new_pulse_width;
+        pin->duty_cycle = duty_cycle;
 }
 
 // Set the frequncy of the pwm output
@@ -64,7 +64,7 @@ void pwm_frequency_set(PWMOut* pin, uint32_t frequency) {
 
 		PWMGenPeriodSet(pin->base, pin->gen, period);
         // Update the PWM
-        pwm_duty_cycle_set(pin, pin->duty_cycle);
+        pwm_duty_cycle_set(pin, period * pin->duty_cycle);
 
 		pin->period = period;
 }
