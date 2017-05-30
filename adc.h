@@ -14,8 +14,8 @@
 #include "driverlib/systick.h"
 
 
-#define ALT_NEW_RATIO 0.7
-#define ALT_OLD_RATIO 0.3
+#define ALT_NEW_RATIO 0.3
+#define ALT_OLD_RATIO (1 - ALT_NEW_RATIO)
 
 #define ADC_GPIO_PERIPH SYSCTL_PERIPH_GPIOE
 #define ADC_ADC_PERIPH SYSCTL_PERIPH_ADC0

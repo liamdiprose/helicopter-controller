@@ -30,7 +30,7 @@ enum calibration_state_e {
 };
 
 
-#define ALTITUDE_HOLD 0
+#define ALTITUDE_HOLD 0.4
 #define YAW_HOLD 0
 
 #define YAW_STEP 15
@@ -106,8 +106,13 @@ int main(void) {
 
 
     // Create PID controllers
-	PIDConfig pid_alt = pid_init(0, 0.01, 0);
-    PIDConfig pid_yaw = pid_init(0.08, 0.01, 0);//  0.0002, 0.00000005);
+	PIDConfig pid_alt = pid_init(0.005, 0.001, 0.0000003);
+    PIDConfig pid_yaw = pid_init(0.02, 0.01, 0.0000006);//  0.0002, 0.00000005);
+
+
+//  Goodish Config
+//	PIDConfig pid_alt = pid_init(0.01, 0.001, 0);
+//  PIDConfig pid_yaw = pid_init(0.02, 0.01, 0);//  0.0002, 0.00000005);
 
     // Create PWM outputs to control rotors
 	PWMOut alt_output = pwm_init(PWM_ALT_PWM_PERIPH, PWM_ALT_PWM_BASE, PWM_ALT_GEN, PWM_ALT_OUT, PWM_ALT_OUTBIT);
@@ -162,10 +167,10 @@ int main(void) {
 
 		flight_mode = button_status(button_flight_mode);
 
-//		if (button_status(button_reset) == PRESS_EVENT) {
-//				DEBUG("Reset button pressed");
-//				SysCtlReset();
-//		}
+		if (button_status(button_reset) == PRESS_EVENT) {
+				DEBUG("Reset button pressed");
+				SysCtlReset();
+		}
 
 		switch ( program_state ) {
 			case CALIBRATION: {
@@ -178,8 +183,6 @@ int main(void) {
 						controllers_enabled = false;
 						DEBUG("Calibrating height, lowest height is %d%%", altitude_low);
 						calibration_state = CALIBRATE_YAW;
-						calibrated = true;
-						program_state = LANDED;
 						timer_record(TIMEPERIOD_CALIBRATION);
 					}; break;
 					case CALIBRATE_YAW: {
@@ -310,12 +313,15 @@ int main(void) {
         	int32_t p_perr = pid_yaw.KP * yaw_error * time_delta * 100;
         	int32_t p_ierr = pid_yaw.KI * ((float) pid_yaw.I_error * time_delta) * 100;
         	int32_t p_derr = pid_yaw.KD * ((float) pid_yaw.D_error / time_delta) * 100;
+           	int32_t a_perr = pid_alt.KP * alt_error * time_delta * 100;
+			int32_t a_ierr = pid_alt.KI * ((float) pid_alt.I_error * time_delta) * 100;
+			int32_t a_derr = pid_alt.KD * ((float) pid_alt.D_error / time_delta) * 100;
         	int32_t p_cyaw = current_yaw;
 
         //	uint32_t milliseconds = (int32_t) (time_delta * 1000000);
 
-        	UARTprintf("[A c:%d|t:%d|e:%d|dc:%d]\r\n[Y c:%d|t:%d|e:%d|dc:%d=(P:%d|I:%d|D:%d)]\n", current_alt, target_alt, alt_error, p_alt_dc, p_cyaw, target_yaw, yaw_error, p_yaw_dc, p_perr, p_ierr, p_derr);
-
+        	UARTprintf("[A c:%d|t:%d|e:%d|dc:%d=(P:%d|I:%d|D:%d)]\r\n", current_alt, target_alt, alt_error, p_alt_dc, a_perr, a_ierr, a_derr);
+        	UARTprintf("[Y c:%d|t:%d|e:%d|dc:%d=(P:%d|I:%d|D:%d)]\n", p_cyaw, target_yaw, yaw_error, p_yaw_dc, p_perr, p_ierr, p_derr);
         }
         if (loop_count == 0x7FFFFFFF) {
         	DEBUG("Reseting loop count");
@@ -323,7 +329,6 @@ int main(void) {
         } else {
         	loop_count = 0;
         }
-
        }
 }
 

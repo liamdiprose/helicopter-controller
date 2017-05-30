@@ -25,5 +25,5 @@ float pid_update(PIDConfig* config, int32_t error, float dt) {
 
 	return config->KP * error
 			+ config->KI * ((float) config->I_error * dt)
-			+ config->KD * ((float) config->D_error / dt);
+			+ config->KD * ((float) config->D_error / (0.01 + dt));
 }
