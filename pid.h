@@ -14,8 +14,8 @@ typedef struct PID_config_s {
 	float KP;
 	float KI;
 	float KD;
-	float I_error;
-	float D_error;
+	int32_t I_error;
+	int32_t D_error;
 } PIDConfig;
 
 // Create a new PID configuration

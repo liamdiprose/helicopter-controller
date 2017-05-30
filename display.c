@@ -14,14 +14,10 @@ void display_init(void) {
 //}
 
 // Update altitude reading on OLED display
-void display_update_alt(int32_t current, int32_t target) {
-	char line[24] = {0};
-	usprintf(line, "Alt: %d%%[%d%%]", current, target);
-	OLEDStringDraw(line, 0, 1);
-}
-
-void display_update_yaw(int32_t current, int32_t target) {
-	char line[24] = {0};
-	usprintf(line, "Yaw: %d[%d] d", current, target);
-	OLEDStringDraw(line, 0, 2);
+void display_update(int32_t current_alt, int32_t target_alt, int32_t current_yaw, int32_t target_yaw) {
+	char line[24];
+	usprintf(line, "Alt: %d [%d]    \0", current_alt, target_alt);
+	OLEDStringDraw(line, 3, 0);
+	usprintf(line, "Yaw: %d [%d]    \0", current_yaw, target_yaw);
+	OLEDStringDraw(line, 3, 1);
 }

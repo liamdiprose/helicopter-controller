@@ -7,16 +7,18 @@
 
 #include "timer.h"
 
-#define MAX_UINT32 0x7FFFFFFF
+#define TIMER_TIMEOUT_VAL 0x7FFFFFFF
 
-uint32_t g_millis = 0;
-uint32_t g_lap = 0;
 
-void timer_ms_routine(void) {
-	  TimerIntClear(TIMER5_BASE, TIMER_TIMA_TIMEOUT);
-	  g_millis++;
+// Save how many times timer has wrapped around to prevent wrap-around errors
+uint32_t g_loops = {0};
+
+uint32_t g_saves[TIMER_NUM_RECORDS];
+
+void timer_timeout_routine(void) {
+	  TimerIntClear(TIMER_BASE, TIMER_TIMA_TIMEOUT);
+	  g_loops++;
 }
-
 
 void timer_init(void) {
 
@@ -26,29 +28,45 @@ void timer_init(void) {
 
 	TimerConfigure(TIMER_BASE, TIMER_CFG_PERIODIC_UP);
 	TimerClockSourceSet(TIMER_BASE, TIMER_CLOCK_SYSTEM);
-	//TimerPrescaleSet(TIMER_BASE, TIMER_A, 255);
+	TimerPrescaleSet(TIMER_BASE, TIMER_A, 255);
 
-	TimerLoadSet(TIMER_BASE, TIMER_A, MAX_UINT32);
+	TimerIntRegister(TIMER_BASE, TIMER_A, timer_timeout_routine);
+	TimerLoadSet(TIMER_BASE, TIMER_A, TIMER_TIMEOUT_VAL);
 
+	TimerIntEnable(TIMER_BASE, TIMER_TIMA_TIMEOUT);
 	TimerEnable(TIMER_BASE, TIMER_A);
 }
 
 // Get amount of milliseconds since the timer was cleared.
-uint32_t timer_get_millis(void) {
-	return TimerValueGet(TIMER_BASE, TIMER_A) / (SysCtlClockGet()/1000000);
+uint32_t timer_get_micros(void) {
+	uint32_t period = (SysCtlClockGet()/ONE_MICROSECOND);
+	return (TimerValueGet(TIMER_BASE, TIMER_A) ) /  period;
 }
 
-// Set the timer to 0
-void timer_clear(void) {
-	//TimerValueSet(TIMER_BASE, TIMER_A, 0);
+
+// Helper function that returns time in SI units
+float timer_get_seconds(void) {
+	return (float) timer_get_micros() / ONE_MICROSECOND;
+}
+
+void timer_record(uint8_t index) {
+	g_saves[index] = timer_get_micros();
 }
 
 // Set a marker for a new lap
-void timer_set_lap(void) {
-	g_lap = timer_get_millis();
+uint32_t timer_micros_since(uint8_t index) {
+	// Freeze time to operate on fixed value
+	uint32_t frozen_time = timer_get_micros();
+
+	// If timer has wrapped around (ONCE!), then adjust time since
+	if (g_saves[index] > frozen_time) {
+		return TIMER_TIMEOUT_VAL - g_saves[index] + frozen_time;
+	} else {
+		return frozen_time - g_saves[index];
+	}
 }
 
-// Get time since last lap
-uint32_t timer_get_lap(void) {
-	return timer_get_millis() - g_lap;
+// Return seconds since index happened
+float timer_seconds_since(uint8_t index) {
+	return (float) timer_micros_since(index) / ONE_MICROSECOND;
 }

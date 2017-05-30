@@ -13,6 +13,8 @@ void button_check_routine(void);
 Button* button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin, ButtonPullDirection pull_direction) {
 
 	SysCtlPeripheralEnable(gpio_periph);
+    // Wait for peripheral to be ready
+    while(!SysCtlPeripheralReady(gpio_periph));
 	// Port F is already enabled, as it had to be unlocked
 	if (gpio_periph == SYSCTL_PERIPH_GPIOF) {
 		GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
@@ -20,8 +22,7 @@ Button* button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin,
 		GPIO_PORTF_LOCK_R = GPIO_LOCK_M;
 	}
 
-    // Wait for peripheral to be ready
-    while(!SysCtlPeripheralReady(gpio_periph));
+
     
 	// Configure input to be GPIO
 	GPIOPinTypeGPIOInput(gpio_base, gpio_pin);
@@ -29,15 +30,19 @@ Button* button_init(uint32_t gpio_periph, uint32_t gpio_base, uint32_t gpio_pin,
 
 	Button new_button;
 	// Configure Pad to pull high when button disconnected
-	if (pull_direction == PULL_DOWN) {
-		GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
-		new_button = (Button) {gpio_base, gpio_pin, pull_direction, 0, BUTTON_STATE_RELEASED, 0};
-	} else if (pull_direction == PULL_UP) {
-		GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
-		new_button = (Button) {gpio_base, gpio_pin, pull_direction, BUTTON_COUNT_START, BUTTON_STATE_PRESSED, 0};
-	} else {
-		GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
-		new_button = (Button) {gpio_base, gpio_pin, pull_direction, BUTTON_COUNT_START, BUTTON_STATE_PRESSED, 0};
+	switch ( pull_direction ) {
+		case PULL_DOWN: {
+				GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+				new_button = (Button) {gpio_base, gpio_pin, pull_direction, 0, BUTTON_STATE_RELEASED, 0};
+		}; break;
+		case PULL_UP: {
+			GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPD);
+			new_button = (Button) {gpio_base, gpio_pin, pull_direction, BUTTON_COUNT_START, BUTTON_STATE_PRESSED, 0};
+		}; break;
+		case NONE: {
+			GPIOPadConfigSet(gpio_base, gpio_pin, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+			new_button = (Button) {gpio_base, gpio_pin, pull_direction, BUTTON_COUNT_START, BUTTON_STATE_PRESSED, 0};
+		};break;
 	}
 
 
@@ -100,7 +105,7 @@ ButtonStatus button_status(Button* btn) {
 
 	//  Convert pressed state to updated state
 	if (btn->updated) {
-		status = status == PRESSED ? PRESS_EVENT : RELEASE_EVENT;
+		status = (status == PRESSED) ? PRESS_EVENT : RELEASE_EVENT;
 		btn->updated = false;  // Prevent button press being acted apon twice
 	}
 

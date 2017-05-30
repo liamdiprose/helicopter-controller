@@ -64,11 +64,11 @@ OLEDStringDraw(char *pcStr, unsigned long ulColumn, unsigned long ulRow)
 	int charX = ulColumn;	//Char index in X axis. (character column)
 	int charY = ulRow;		//Char index in Y axis. (character row)
 
-    //Put the cursor in the right place:
-    OrbitOledSetCursor(charX, charY);
+	   //Put the cursor in the right place:
+	    OrbitOledSetCursor(charX, charY);
 
-    //Print the string:
-    OrbitOledPutString(pcStr);
+	    //Print the string:
+	    OrbitOledPutString(pcStr);
 }
 
 

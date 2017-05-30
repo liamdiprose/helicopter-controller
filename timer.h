@@ -8,21 +8,29 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/timer.h"
 
+#define TIMER_TIMEOUT 0x7FFFFFFF
+#define TIMER_NUM_RECORDS 5
+
+
 #define TIMER_PERIPH SYSCTL_PERIPH_TIMER5
 #define TIMER_BASE TIMER5_BASE
 
+#define ONE_MICROSECOND 1000000
+
 void timer_init(void);
 
+float timer_get_seconds(void);
 // Get amount of milliseconds since the timer was cleared.
-uint32_t timer_get_millis(void);
+uint32_t timer_get_micros(void);
 
-// Set the timer to 0
-void timer_clear(void);
+float timer_get_seconds(void);
 
-// Set a marker for a new lap
-void timer_set_lap(void);
+// Record time, for measureing period later on
+void timer_record(uint8_t index);
 
-// Get time since last lap
-uint32_t timer_get_lap(void);
+// Return time period since `time_record(index)` call
+uint32_t timer_micros_since(uint8_t index);
+
+float timer_seconds_since(uint8_t index);
 
 #endif /* TIMER_H_ */

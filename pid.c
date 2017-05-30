@@ -19,11 +19,11 @@ void pid_clear_errors(PIDConfig* config) {
 float pid_update(PIDConfig* config, int32_t error, float dt) {
 	// Calculate derivative and intergral errors
 
-	config->I_error = ((float) error + config->I_error);
+	config->I_error += error;
 
-	config->D_error = ((float) error - config->D_error);
+	config->D_error = error - config->D_error;
 
 	return config->KP * error
-			+ config->KI * (config->I_error * dt)
-			+ config->KD * (config->D_error / dt);
+			+ config->KI * ((float) config->I_error * dt)
+			+ config->KD * ((float) config->D_error / dt);
 }

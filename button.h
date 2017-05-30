@@ -37,7 +37,7 @@ typedef struct button_s {
 	ButtonPullDirection pull_dir;  // What is the counter trying to validate
 	uint32_t count;
 	uint8_t state;     // Current state of button
-	char updated;      // Has current state been read yet?
+	uint8_t updated;      // Has current state been read yet?
 } Button;
 
 

@@ -18,87 +18,28 @@
 #include "timer.h"
 #include "debug.h"
 
+#include "config.h"
+
 // Define possible states of program overall FSM
 typedef enum {
 	CALIBRATION, LANDED, FLYING, LANDING
 } ProgramState;
 
-enum calibration_states {
+enum calibration_state_e {
     	CALIBRATE_HEIGHT, CALIBRATE_YAW
 };
 
-// Increase Altitude Button
-#define BUTTON_ALT_UP_PERIPH SYSCTL_PERIPH_GPIOE
-#define BUTTON_ALT_UP_BASE GPIO_PORTE_BASE
-#define BUTTON_ALT_UP_PIN GPIO_PIN_0
 
-// Decrease Altitude Button
-#define BUTTON_ALT_DOWN_PERIPH SYSCTL_PERIPH_GPIOD
-#define BUTTON_ALT_DOWN_BASE GPIO_PORTD_BASE
-#define BUTTON_ALT_DOWN_PIN GPIO_PIN_2
-
-// Rotate Clockwise Button
-#define BUTTON_YAW_LEFT_PERIPH SYSCTL_PERIPH_GPIOF
-#define BUTTON_YAW_LEFT_BASE GPIO_PORTF_BASE
-#define BUTTON_YAW_LEFT_PIN GPIO_PIN_0
-
-// Rotate Counter-clockwise Button
-#define BUTTON_YAW_RIGHT_PERIPH SYSCTL_PERIPH_GPIOF
-#define BUTTON_YAW_RIGHT_BASE GPIO_PORTF_BASE
-#define BUTTON_YAW_RIGHT_PIN GPIO_PIN_4
-
-// Reset Button
-#define BUTTON_RESET_PERIPH SYSCTL_PERIPH_GPIOA
-#define BUTTON_RESET_BASE GPIO_PORTA_BASE
-#define BUTTON_RESET_PIN GPIO_PIN_6
-
-// Flight Mode Switch
-#define SWITCH_FMODE_PERIPH SYSCTL_PERIPH_GPIOA
-#define SWITCH_FMODE_BASE GPIO_PORTA_BASE
-#define SWITCH_FMODE_PIN GPIO_PIN_7
-
-// Yaw reference "button"
-#define BUTTON_YAW_REF_PERIPH SYSCTL_PERIPH_GPIOC
-#define BUTTON_YAW_REF_BASE GPIO_PORTC_BASE
-#define BUTTON_YAW_REF_PIN GPIO_PIN_4
-
-// Main Roter PWM Output
-#define PWM_ALT_PWM_PERIPH SYSCTL_PERIPH_PWM0
-#define PWM_ALT_PWM_BASE PWM0_BASE
-#define PWM_ALT_GEN PWM_GEN_3
-#define PWM_ALT_OUT PWM_OUT_7
-#define PWM_ALT_OUTBIT PWM_OUT_7_BIT
-#define PWM_ALT_GPIO_PERIPH SYSCTL_PERIPH_GPIOC
-#define PWM_ALT_GPIO_BASE GPIO_PORTC_BASE
-#define PWM_ALT_GPIO_PIN GPIO_PIN_5
-#define PWM_ALT_GPIO_PIN_CONF GPIO_PC5_M0PWM7
-
-// Tail Rotor PWM Output
-#define PWM_YAW_PWM_PERIPH SYSCTL_PERIPH_PWM1
-#define PWM_YAW_PWM_BASE PWM1_BASE
-#define PWM_YAW_GEN PWM_GEN_2
-#define PWM_YAW_OUT PWM_OUT_5
-#define PWM_YAW_OUTBIT PWM_OUT_5_BIT
-#define PWM_YAW_GPIO_PERIPH SYSCTL_PERIPH_GPIOF
-#define PWM_YAW_GPIO_BASE GPIO_PORTF_BASE
-#define PWM_YAW_GPIO_PIN GPIO_PIN_1
-#define PWM_YAW_GPIO_PIN_CONF GPIO_PF1_M1PWM5
+#define ALTITUDE_HOLD 0
+#define YAW_HOLD 0
 
 #define YAW_STEP 15
 #define ALT_STEP 10
 
-// CSV Status Options
-#define CSV_STATUS_PRINTING 1
-#define STATUS_CSV_HEADER "Target Yaw, Actual Yaw, Target Altitude, Actual Altitude, Tail Rotor Duty Cycle, Main Rotor Duty Cycle, Operating Mode"
-#define STATUS_CSV_FORMAT "%d, %d, %d, %d, %d, %d, %s\r\n"
-#if CSV_STATUS_PRINTING
-#define CSV_STATUS(...) UARTprintf(STATUS_CSV_FORMAT, ##__VA_ARGS__)
-#else
-#define CSV_STATUS(...) do {} while (0)
-#endif
+#define CALIBRATION_DEG_PER_SEC 10
 
-
-
+#define TIMEPERIOD_CONTROLLER 0
+#define TIMEPERIOD_CALIBRATION 1
 
 void clock_init(void) {
 	SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
@@ -109,19 +50,43 @@ void all_the_routines(void) {
 	 adc_update_routine();
 }
 
-int main(void) {
-	
-    clock_init();
+// Run all modules init functions
+void main_setup(void) {
+	clock_init();
+
 
 	SysTickPeriodSet(SysCtlClockGet()/100);
 
-    // Start timer
-    timer_init();
+	// Start timer
+	timer_init();
 
-    // Initiase UART
+	// Initiase UART
 	uart_init();
-    DEBUG("UART Initialised");
+	DEBUG("UART Initialised");
+	// Start ADC module to read altitude
+	adc_init();
+	DEBUG("ADC Initialised");
 
+	// Start quadrature encoder to read yaw
+	quad_init();
+	DEBUG("Quadrature Encoder Initialised");
+
+	// Start display to display TODO information
+	display_init();
+	DEBUG("Display Initialised");
+
+	SysTickIntRegister(all_the_routines);
+	SysTickEnable();
+	SysTickIntEnable();
+}
+
+
+int main(void) {
+	main_setup();
+
+	//////////////////////////////////////////////////////////////////////////////////////
+	// Initialise variables needed for main program loop
+	//////////////////////////////////////////////////////////////////////////////////////
 
 	// Initialise buttons
 	Button* button_alt_up = button_init(BUTTON_ALT_UP_PERIPH, BUTTON_ALT_UP_BASE,
@@ -133,21 +98,16 @@ int main(void) {
 	Button* button_yaw_right = button_init(BUTTON_YAW_RIGHT_PERIPH, BUTTON_YAW_RIGHT_BASE,
                     BUTTON_YAW_RIGHT_PIN, PULL_DOWN);
 	Button* button_flight_mode = button_init(SWITCH_FMODE_PERIPH, SWITCH_FMODE_BASE,
-	    				SWITCH_FMODE_PIN, NONE);
-	DEBUG("Buttons Initialised");
+	    			SWITCH_FMODE_PIN, NONE);
+	Button* button_reset = button_init ( BUTTON_RESET_PERIPH, BUTTON_RESET_BASE,
+					BUTTON_RESET_PIN, PULL_DOWN);  // TODO: Pull up?
+	Button* button_yaw_reference = button_init(BUTTON_YAW_REF_PERIPH, BUTTON_YAW_REF_BASE,
+					BUTTON_YAW_REF_PIN, PULL_DOWN);
 
-	// Start ADC module to read altitude
-	adc_init();
-    DEBUG("ADC Initialised");
-
-    // Start quadrature encoder to read yaw
-	quad_init();
-    DEBUG("Quadrature Encoder Initialised");
 
     // Create PID controllers
-	PIDConfig pid_alt = pid_init(0.02, 0.006, 0);
-    PIDConfig pid_yaw = pid_init(1.5, 0.001, 0.05);//  0.0002, 0.00000005);
-    DEBUG("PID Controllers Initialised");
+	PIDConfig pid_alt = pid_init(0, 0.01, 0);
+    PIDConfig pid_yaw = pid_init(0.08, 0.01, 0);//  0.0002, 0.00000005);
 
     // Create PWM outputs to control rotors
 	PWMOut alt_output = pwm_init(PWM_ALT_PWM_PERIPH, PWM_ALT_PWM_BASE, PWM_ALT_GEN, PWM_ALT_OUT, PWM_ALT_OUTBIT);
@@ -157,21 +117,16 @@ int main(void) {
     pwm_init_gpio(&yaw_output, PWM_YAW_GPIO_PERIPH, PWM_YAW_GPIO_BASE, PWM_YAW_GPIO_PIN, PWM_YAW_GPIO_PIN_CONF);
     DEBUG("PWM outputs Initialised");
 
-    // Start display to display TODO information
-    display_init();
-    DEBUG("Display Initialised");
-
-    // Initialise Variable to track state of program FSM
+    // Track state of program FSM
     ProgramState program_state = LANDED;
 
-
-
-    // Save events of flight mode switch
+    // Hold the status of the flight mode switch
     ButtonStatus flight_mode;
 
     // Track if program has calibrated yet
+    enum calibration_state_e calibration_state;
     bool calibrated = false;
-    enum calibration_states calibration_state;
+
 
     uint32_t altitude_low = 55;
 
@@ -188,22 +143,13 @@ int main(void) {
 	float old_alt_dc = 0;
 	float old_yaw_dc = 0;
 
-	float time_delta = 0.001;
+	float time_delta;
 
-	// Save variables to detect changes inbetween loops
-    uint32_t previous_alt = 1;
-    int32_t previous_yaw = 1;
+	// Count loops to schedule UART and Display
+	uint32_t loop_count = 0;
 
 
-    SysTickIntRegister(all_the_routines);
-	SysTickEnable();
-	SysTickIntEnable();
-
-	uint32_t last_loop = timer_get_millis();
-
-    DEBUG("Startup completed in %d ms", timer_get_millis());
-    UARTprintf("aP:%d,aI:%d,aD:%d\n", pid_alt.KP, pid_alt.KI, pid_alt.KD);
-    UARTprintf("yP:%d,yI:%d,yD:%d\n", pid_yaw.KP, pid_yaw.KI, pid_yaw.KD);
+    DEBUG("Startup completed in %d ms", timer_get_micros()/1000);
 	while (1) {
 		// Copy current height from ADC
 		if (calibrated) {
@@ -211,26 +157,43 @@ int main(void) {
 		} else {
 			current_alt = adc_get_percent();
 		}
+
         current_yaw = quad_get_degrees();
 
-//        if (current_yaw < 0) {
-//        	current_yaw = current_yaw * -1;
-//        }
-
 		flight_mode = button_status(button_flight_mode);
+
+//		if (button_status(button_reset) == PRESS_EVENT) {
+//				DEBUG("Reset button pressed");
+//				SysCtlReset();
+//		}
 
 		switch ( program_state ) {
 			case CALIBRATION: {
 
 				switch ( calibration_state ) {
 				case CALIBRATE_HEIGHT: {
-						altitude_low = current_alt;  // TODO: Samples
+						altitude_low = adc_get_percent();  // TODO: Samples
 						pid_clear_errors(&pid_alt);
 						pid_clear_errors(&pid_yaw);
 						controllers_enabled = false;
 						DEBUG("Calibrating height, lowest height is %d%%", altitude_low);
-						program_state = LANDED;
+						calibration_state = CALIBRATE_YAW;
 						calibrated = true;
+						program_state = LANDED;
+						timer_record(TIMEPERIOD_CALIBRATION);
+					}; break;
+					case CALIBRATE_YAW: {
+						controllers_enabled = true;
+						target_yaw = (int32_t) CALIBRATION_DEG_PER_SEC * timer_seconds_since(TIMEPERIOD_CALIBRATION);
+						if (button_status(button_yaw_reference) == PRESS_EVENT) {
+							// Yaw reference found
+							DEBUG("Found Yaw reference. Reset current yaw");
+							current_yaw = 0;
+							program_state = LANDED;
+							pwm_set_state(alt_output, false);
+							pwm_set_state(yaw_output, false);
+							calibrated = true;
+						}
 					}
 				}
 			} break;
@@ -248,7 +211,7 @@ int main(void) {
 						program_state = FLYING;
 					} else {
 						DEBUG("Beginning calibration...");
-						timer_set_lap();
+						timer_record(TIMEPERIOD_CALIBRATION);
 						calibration_state = CALIBRATE_HEIGHT;
 						controllers_enabled = true;
 						program_state = CALIBRATION;
@@ -260,6 +223,7 @@ int main(void) {
 				if (flight_mode == PRESS_EVENT) {
 					// Flight Mode switch has been set to "land"
 					DEBUG("Landing...");
+
 					program_state = LANDING;
 					break;
 				}
@@ -278,29 +242,15 @@ int main(void) {
 				}
 				if (button_status(button_yaw_left) == PRESS_EVENT) {
 		                DEBUG("Yaw left button pressed");
-		                if (target_yaw < 360) {
-		                	target_yaw += YAW_STEP;
-		                }
+		                target_yaw += YAW_STEP;
 				}
 				if (button_status(button_yaw_right) == PRESS_EVENT) {
 		                DEBUG("Yaw right button pressed");
-		                if (target_yaw > 0) {
-		                	target_yaw -= YAW_STEP;
-		                }
+		                target_yaw -= YAW_STEP;
 				}
 
 			} break;
 			case LANDING: {
-				if (flight_mode == RELEASE_EVENT) {
-					DEBUG("Landing abort. Flying");
-
-					// Seize Movement
-					target_alt = current_alt < 0 ? 0 : current_alt;
-					target_yaw = 0;
-
-					program_state = FLYING;
-					break;
-				}
 				if (current_alt < altitude_low + 10) {
 					DEBUG("Landed");
 					target_alt = 0;
@@ -312,77 +262,68 @@ int main(void) {
 					pid_clear_errors(&pid_yaw);
 					controllers_enabled = false;
 					program_state = LANDED;
+				} else {
+					// TODO: Soft landing at yaw=0
+					target_yaw = 0;
+
+					// Save time variable for time_delta.
+					// Compute height for time
 				}
 			} break;
 		}
 
 		if (controllers_enabled) {
 			// Plug controllers into rotors
-			time_delta = ((float) timer_get_lap() / 1000000);
 
-			alt_error = target_alt - current_alt;
+				time_delta = timer_seconds_since(TIMEPERIOD_CONTROLLER);
 
-			yaw_error = target_yaw - current_yaw;
+				alt_error = target_alt - current_alt;
+				yaw_error = target_yaw - current_yaw;
 
-//			if (yaw_error > 180) {
-//				yaw_error = 360 - yaw_error;
-//			}
-//			if (yaw_error < -180) {
-//				yaw_error = yaw_error + 360;
-//			}
+				alt_dc = pid_update(&pid_alt, alt_error, time_delta);
 
-			alt_dc = pid_update(&pid_alt, alt_error, time_delta);
+				if (alt_dc != old_alt_dc) {
+					alt_dc += ALTITUDE_HOLD;
+					pwm_duty_cycle_set(&alt_output, alt_dc);
+					old_alt_dc = alt_dc;
+				}
+				yaw_dc = pid_update(&pid_yaw, yaw_error, time_delta);
+				if (yaw_dc != old_yaw_dc) {
+					yaw_dc += YAW_HOLD;
 
-			float alt_diff =0;
+					pwm_duty_cycle_set(&yaw_output, yaw_dc);
+					old_yaw_dc = yaw_dc;
+				}
 
-			if (alt_dc != old_alt_dc) {
-				pwm_duty_cycle_set(&alt_output, alt_dc);
-				alt_diff = (alt_dc - old_alt_dc)/old_alt_dc;
-				old_alt_dc = alt_dc;
-			}
-			yaw_dc = pid_update(&pid_yaw, yaw_error, time_delta);
-			if (yaw_dc != old_yaw_dc) {
-				yaw_dc *= 1 + 0.005 * alt_diff;
-				pwm_duty_cycle_set(&yaw_output, yaw_dc);
-				old_yaw_dc = yaw_dc;
-			}
-
-			timer_set_lap();
+				timer_record(TIMEPERIOD_CONTROLLER);
 		}
 
-        if (current_alt != previous_alt || current_yaw != previous_yaw) {
-        	  if (timer_get_millis() % 10000 == 0) {
-				// UART print round, format data for the humans
-				display_update_alt(current_alt, target_alt);
-				previous_alt = current_alt;
-				display_update_yaw(current_yaw, target_yaw);
-				previous_yaw = current_yaw;
-        	  }
-        }
+		  if (timer_get_micros() / 1000 % 50 == 0) {
+			display_update(current_alt, target_alt, current_yaw, target_yaw);
+		  }
 
-        if (timer_get_millis()/1000 % 500 == 0) {
+        if (timer_get_micros() / 10000 % 50 == 0) {
 
-        	// Target Yaw, Actual Yaw, Target Altitude, Actual Altitude, Tail Rotor Duty Cycle, Main Rotor Duty Cycle, Operating Mode
-
-        //	CSV_STATUS(target_yaw, current_yaw, target_alt, current_alt,  yaw_output.duty_cycle,
-		//			alt_output.duty_cycle, program_state);
-
-        	int32_t p_alt_dc = (uint32_t) (alt_output.duty_cycle * 100) + 0.30;
-        	int32_t p_yaw_dc = (uint32_t) (yaw_output.duty_cycle * 100) + 0.30;
+        	int32_t p_alt_dc = (uint32_t) (alt_dc * 100);
+        	//int32_t p_yaw_dc = (uint32_t) (yaw_output.duty_cycle * 100);
+        	int32_t p_yaw_dc = (uint32_t) (yaw_dc * 100);
+        	int32_t p_perr = pid_yaw.KP * yaw_error * time_delta * 100;
+        	int32_t p_ierr = pid_yaw.KI * ((float) pid_yaw.I_error * time_delta) * 100;
+        	int32_t p_derr = pid_yaw.KD * ((float) pid_yaw.D_error / time_delta) * 100;
         	int32_t p_cyaw = current_yaw;
 
-        	uint32_t milliseconds = time_delta*1000000;
+        //	uint32_t milliseconds = (int32_t) (time_delta * 1000000);
 
-//        	return config->KP * error
-//        				+ config->KI * (config->I_error * dt)
-//        				+ config->KD * (config->D_error / dt);
+        	UARTprintf("[A c:%d|t:%d|e:%d|dc:%d]\r\n[Y c:%d|t:%d|e:%d|dc:%d=(P:%d|I:%d|D:%d)]\n", current_alt, target_alt, alt_error, p_alt_dc, p_cyaw, target_yaw, yaw_error, p_yaw_dc, p_perr, p_ierr, p_derr);
 
-        	UARTprintf("%d,%d,%d,%d,%d,%d,%d,%d,%d\n", timer_get_millis(), current_alt, target_alt, alt_error, p_alt_dc, p_cyaw, target_yaw, yaw_error, p_yaw_dc);
-        	//UARTprintf("T:%d [A:%d t:%d e:%d dc:%d ie:%d] [Y:%d t:%d e:%d dc:%d] TD:%d\n", timer_get_millis(), current_alt, target_alt, alt_error, p_alt_dc, p_ierr, current_yaw, target_yaw, yaw_error, p_yaw_dc, milliseconds);
-
-
-        	//UARTprintf("Mdc:%d = %d * (c%d - t%d) + %d * %d * %d\r\n", alt_dc, p_kp, current_alt, target_alt, p_ki, p_ierr, milliseconds);
+        }
+        if (loop_count == 0x7FFFFFFF) {
+        	DEBUG("Reseting loop count");
+        	loop_count ++;
+        } else {
+        	loop_count = 0;
         }
 
-	}
+       }
 }
+
