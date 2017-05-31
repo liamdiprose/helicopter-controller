@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+
 #include "inc/tm4c123gh6pm.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/systick.h"
@@ -22,7 +24,7 @@
 
 // Define possible states of program overall FSM
 typedef enum {
-	CALIBRATION, LANDED, FLYING, LANDING
+	CALIBRATION, FIND_YAW_REF, LANDED, FLYING, LANDING
 } ProgramState;
 
 enum calibration_state_e {
@@ -36,10 +38,43 @@ enum calibration_state_e {
 #define YAW_STEP 15
 #define ALT_STEP 10
 
-#define CALIBRATION_DEG_PER_SEC 10
+#define CALIBRATION_DEG_PER_SEC 3
+#define LANDING_ALT_PER_SEC -5
+#define LANDING_YAW_ERROR_THRESHOLD 10
+#define LANDING_ALT_ERROR_THRESHOLD 5
 
 #define TIMEPERIOD_CONTROLLER 0
 #define TIMEPERIOD_CALIBRATION 1
+#define TIMEPERIOD_LANDING 2
+
+
+#define HELICOPTER 2
+
+#if HELICOPTER == 1
+#define ALT_PROPORTIONAL_GAIN 0.01
+#define ALT_INTEGRAL_GAIN 0.001
+#define ALT_DERIVATIVE_GAIN 0
+#define YAW_PROPORTIONAL_GAIN 0.02
+#define YAW_INTEGRAL_GAIN 0.01
+#define YAW_DERIVATIVE_GAIN 0
+#endif
+#if HELICOPTER == 2
+#define ALT_PROPORTIONAL_GAIN 0.009
+#define ALT_INTEGRAL_GAIN 0.0015
+#define ALT_DERIVATIVE_GAIN 0.0000003
+#define YAW_PROPORTIONAL_GAIN 0.01
+#define YAW_INTEGRAL_GAIN 0.008
+#define YAW_DERIVATIVE_GAIN 0.00000003
+#endif
+#if HELICOPTER == 3
+#define ALT_PROPORTIONAL_GAIN 0.009
+#define ALT_INTEGRAL_GAIN 0.0015
+#define ALT_DERIVATIVE_GAIN 0.0000006
+#define YAW_PROPORTIONAL_GAIN 0.005
+#define YAW_INTEGRAL_GAIN 0.01
+#define YAW_DERIVATIVE_GAIN 0.00000009
+#endif
+
 
 void clock_init(void) {
 	SysCtlClockSet (SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
@@ -49,6 +84,7 @@ void all_the_routines(void) {
 	 button_check_routine();
 	 adc_update_routine();
 }
+
 
 // Run all modules init functions
 void main_setup(void) {
@@ -101,18 +137,11 @@ int main(void) {
 	    			SWITCH_FMODE_PIN, NONE);
 	Button* button_reset = button_init ( BUTTON_RESET_PERIPH, BUTTON_RESET_BASE,
 					BUTTON_RESET_PIN, PULL_DOWN);  // TODO: Pull up?
-	Button* button_yaw_reference = button_init(BUTTON_YAW_REF_PERIPH, BUTTON_YAW_REF_BASE,
-					BUTTON_YAW_REF_PIN, PULL_DOWN);
 
 
-    // Create PID controllers
-	PIDConfig pid_alt = pid_init(0.005, 0.001, 0.0000003);
-    PIDConfig pid_yaw = pid_init(0.02, 0.01, 0.0000006);//  0.0002, 0.00000005);
+	PIDConfig pid_alt = pid_init(ALT_PROPORTIONAL_GAIN, ALT_INTEGRAL_GAIN, ALT_DERIVATIVE_GAIN);
+  	PIDConfig pid_yaw = pid_init(YAW_PROPORTIONAL_GAIN, YAW_INTEGRAL_GAIN, YAW_DERIVATIVE_GAIN);
 
-
-//  Goodish Config
-//	PIDConfig pid_alt = pid_init(0.01, 0.001, 0);
-//  PIDConfig pid_yaw = pid_init(0.02, 0.01, 0);//  0.0002, 0.00000005);
 
     // Create PWM outputs to control rotors
 	PWMOut alt_output = pwm_init(PWM_ALT_PWM_PERIPH, PWM_ALT_PWM_BASE, PWM_ALT_GEN, PWM_ALT_OUT, PWM_ALT_OUTBIT);
@@ -132,7 +161,6 @@ int main(void) {
     enum calibration_state_e calibration_state;
     bool calibrated = false;
 
-
     uint32_t altitude_low = 55;
 
 	// Declear variables for controllers
@@ -150,15 +178,11 @@ int main(void) {
 
 	float time_delta;
 
-	// Count loops to schedule UART and Display
-	uint32_t loop_count = 0;
-
-
     DEBUG("Startup completed in %d ms", timer_get_micros()/1000);
 	while (1) {
 		// Copy current height from ADC
 		if (calibrated) {
-			current_alt =  (-1 * adc_get_percent()+altitude_low)*4;
+			current_alt =  (-adc_get_percent() + altitude_low) * 4;
 		} else {
 			current_alt = adc_get_percent();
 		}
@@ -175,35 +199,56 @@ int main(void) {
 		switch ( program_state ) {
 			case CALIBRATION: {
 
+				if (flight_mode == RELEASE_EVENT) {
+					// Abort calibration
+					calibrated = false;
+					DEBUG("Aborting Calibration.");
+					pwm_set_state(alt_output, false);
+					pwm_set_state(yaw_output, false);
+					program_state = LANDED;
+				}
+
 				switch ( calibration_state ) {
 				case CALIBRATE_HEIGHT: {
 						altitude_low = adc_get_percent();  // TODO: Samples
 						pid_clear_errors(&pid_alt);
 						pid_clear_errors(&pid_yaw);
 						controllers_enabled = false;
-						DEBUG("Calibrating height, lowest height is %d%%", altitude_low);
+						DEBUG("Calibrating yaw. Finding Reference");
+
+						pwm_set_state(alt_output, true);
+						pwm_set_state(yaw_output, true);
 						calibration_state = CALIBRATE_YAW;
+
+						calibrated = true;
+
 						timer_record(TIMEPERIOD_CALIBRATION);
-					}; break;
-					case CALIBRATE_YAW: {
-						controllers_enabled = true;
-						target_yaw = (int32_t) CALIBRATION_DEG_PER_SEC * timer_seconds_since(TIMEPERIOD_CALIBRATION);
-						if (button_status(button_yaw_reference) == PRESS_EVENT) {
-							// Yaw reference found
-							DEBUG("Found Yaw reference. Reset current yaw");
-							current_yaw = 0;
-							program_state = LANDED;
-							pwm_set_state(alt_output, false);
-							pwm_set_state(yaw_output, false);
-							calibrated = true;
-						}
+				}; break;
+				case CALIBRATE_YAW: {
+					controllers_enabled = true;
+					target_yaw = (int32_t) CALIBRATION_DEG_PER_SEC * timer_seconds_since(TIMEPERIOD_CALIBRATION);
+					target_alt = 8;
+
+					if (target_yaw > 10000) {
+						DEBUG("Target Yaw > 10000. Lap timer val: %d", timer_seconds_since(TIMEPERIOD_CALIBRATION));
+					}
+
+					if (quad_found_reference()) {
+						// Yaw reference found
+						DEBUG("!!!Found Yaw reference. Reset current yaw");
+						current_yaw = 0;
+						target_yaw = 0;
+
+						// Return to landed state
+						program_state = FLYING;
+						calibrated = true;
 					}
 				}
-			} break;
+			};
+			}; break;
 			case LANDED: {
 				if (flight_mode == RELEASE_EVENT) {
 					// Begin flight
-
 					if (calibrated) {
 						DEBUG("Flying");
 						pwm_duty_cycle_set(&alt_output, 0);
@@ -214,9 +259,7 @@ int main(void) {
 						program_state = FLYING;
 					} else {
 						DEBUG("Beginning calibration...");
-						timer_record(TIMEPERIOD_CALIBRATION);
 						calibration_state = CALIBRATE_HEIGHT;
-						controllers_enabled = true;
 						program_state = CALIBRATION;
 					}
 				}
@@ -227,6 +270,7 @@ int main(void) {
 					// Flight Mode switch has been set to "land"
 					DEBUG("Landing...");
 
+					timer_record(TIMEPERIOD_LANDING);
 					program_state = LANDING;
 					break;
 				}
@@ -252,45 +296,47 @@ int main(void) {
 		                target_yaw -= YAW_STEP;
 				}
 
-			} break;
+			}; break;
 			case LANDING: {
-				if (current_alt < altitude_low + 10) {
-					DEBUG("Landed");
-					target_alt = 0;
-					target_yaw = current_yaw;
+				target_yaw = 0;
 
+				uint32_t landing_yaw_error = abs(current_yaw - target_yaw);
+
+				if (landing_yaw_error < LANDING_YAW_ERROR_THRESHOLD) {
+					target_alt = LANDING_ALT_PER_SEC * timer_seconds_since(TIMEPERIOD_LANDING);
+				}
+
+				if (landing_yaw_error < LANDING_YAW_ERROR_THRESHOLD && current_alt < LANDING_ALT_ERROR_THRESHOLD) {
 					pwm_set_state(alt_output, false);
 					pwm_set_state(yaw_output, false);
 					pid_clear_errors(&pid_alt);
 					pid_clear_errors(&pid_yaw);
 					controllers_enabled = false;
 					program_state = LANDED;
-				} else {
-					// TODO: Soft landing at yaw=0
-					target_yaw = 0;
-
-					// Save time variable for time_delta.
-					// Compute height for time
 				}
-			} break;
-		}
+			}; break;
+		};
 
 		if (controllers_enabled) {
-			// Plug controllers into rotors
+				// Plug controllers into rotors. Convert microseconds into seconds float
+				time_delta = (float) timer_micros_since(TIMEPERIOD_CONTROLLER) / ONE_MICROSECOND;
 
-				time_delta = timer_seconds_since(TIMEPERIOD_CONTROLLER);
-
+				// Evalutate error of current position
 				alt_error = target_alt - current_alt;
 				yaw_error = target_yaw - current_yaw;
 
+				// Calcuate PID corrective PWM for current position's error
 				alt_dc = pid_update(&pid_alt, alt_error, time_delta);
+				yaw_dc = pid_update(&pid_yaw, yaw_error, time_delta);
 
+				// Input PID duty cycle into PWM output if it has changed
 				if (alt_dc != old_alt_dc) {
 					alt_dc += ALTITUDE_HOLD;
 					pwm_duty_cycle_set(&alt_output, alt_dc);
 					old_alt_dc = alt_dc;
 				}
-				yaw_dc = pid_update(&pid_yaw, yaw_error, time_delta);
+
+				// Input PID duty cycle into PWM output if it has changed
 				if (yaw_dc != old_yaw_dc) {
 					yaw_dc += YAW_HOLD;
 
@@ -298,6 +344,7 @@ int main(void) {
 					old_yaw_dc = yaw_dc;
 				}
 
+				// Reset timing of loop for next time
 				timer_record(TIMEPERIOD_CONTROLLER);
 		}
 
@@ -323,12 +370,6 @@ int main(void) {
         	UARTprintf("[A c:%d|t:%d|e:%d|dc:%d=(P:%d|I:%d|D:%d)]\r\n", current_alt, target_alt, alt_error, p_alt_dc, a_perr, a_ierr, a_derr);
         	UARTprintf("[Y c:%d|t:%d|e:%d|dc:%d=(P:%d|I:%d|D:%d)]\n", p_cyaw, target_yaw, yaw_error, p_yaw_dc, p_perr, p_ierr, p_derr);
         }
-        if (loop_count == 0x7FFFFFFF) {
-        	DEBUG("Reseting loop count");
-        	loop_count ++;
-        } else {
-        	loop_count = 0;
-        }
-       }
+	}
 }
 

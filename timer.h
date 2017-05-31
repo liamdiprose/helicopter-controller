@@ -21,15 +21,14 @@ void timer_init(void);
 
 float timer_get_seconds(void);
 // Get amount of milliseconds since the timer was cleared.
-uint32_t timer_get_micros(void);
+uint64_t timer_get_micros(void);
 
-float timer_get_seconds(void);
 
 // Record time, for measureing period later on
 void timer_record(uint8_t index);
 
 // Return time period since `time_record(index)` call
-uint32_t timer_micros_since(uint8_t index);
+uint64_t timer_micros_since(uint8_t index);
 
 float timer_seconds_since(uint8_t index);
 
