@@ -1,6 +1,12 @@
+/*
+ * adc.h
+ * Provide wrapper to return ADC reading as a percentage
+ *
+ * Authors: Liam Diprose, Aden Durney
+ */
+
 #ifndef ALTITUDEADC_H_
 #define ALTITUDEADC_H_
-
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -12,7 +18,6 @@
 #include "driverlib/sysctl.h"
 #include "utils/ustdlib.h"
 #include "driverlib/systick.h"
-
 
 #define ALT_NEW_RATIO 0.3
 #define ALT_OLD_RATIO (1 - ALT_NEW_RATIO)
@@ -32,4 +37,4 @@ void adc_update_routine(void);
 // Get the latest ADC value in percentage 
 uint32_t adc_get_percent(void);
 
-#endif /* ALTITUDEADC_H_ */
+#endif				/* ALTITUDEADC_H_ */

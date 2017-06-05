@@ -1,3 +1,12 @@
+/*
+ * quad_encoder.h
+ * Decode the quadrature inputs into rotation directions. Keep
+ * track of movements.
+ *
+ * Authors: Liam Diprose, Aden Durney
+ */
+
+
 #ifndef QUAD_ENCODER_H_
 #define QUAD_ENCODER_H_
 
@@ -37,5 +46,4 @@ int32_t quad_get_degrees(void);
 bool quad_found_reference(void);
 
 #endif /* QUAD_ENCODER_H_ */
-
 

@@ -1,8 +1,8 @@
 /*
  * debug.h
- *  Provide Debugging log macro
- *  Created on: May 21, 2017
- *      Author: ldi30
+ *  Provide Debugging log macro for serial debugging
+ *
+ *  Authors: Liam Diprose, Aden Durney
  */
 
 #ifndef DEBUG_H_
@@ -14,9 +14,9 @@
 #define DEBUGGING_TAG "[D] "
 
 #if DEBUGGING_MODE
-    #define DEBUG(f,...) UARTprintf(DEBUGGING_TAG);UARTprintf(f, ##__VA_ARGS__);UARTprintf("\r\n")
+#define DEBUG(f,...) UARTprintf(DEBUGGING_TAG);UARTprintf(f, ##__VA_ARGS__);UARTprintf("\r\n")
 #else
-    #define DEBUG(...) do {} while (0) // Do Nothing
+#define DEBUG(...) do {} while (0)	// Do Nothing
 #endif
 
-#endif /* DEBUG_H_ */
+#endif				/* DEBUG_H_ */

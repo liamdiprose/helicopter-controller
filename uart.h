@@ -1,9 +1,9 @@
 /*
  * uart.h
+ * Provide initialiation for UART serial output.
  *
  *  Created on: Mar 22, 2017
- *      Author: Aden Durney
- *      Author: Liam Diprose
+ *      Authors: Aden Durney, Liam Diprose
  */
 
 #ifndef UART_H_

@@ -1,3 +1,11 @@
+/*
+ * pwm.h
+ * Handle the initialisation of PWM outputs, and modifications.
+ *
+ * Authors: Liam Diprose, Aden Durney
+ */
+
+
 #ifndef PWM_H_
 #define PWM_H_
 

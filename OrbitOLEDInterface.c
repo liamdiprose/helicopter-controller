@@ -50,27 +50,25 @@
 //! (Based on RIT128x96x4StringDraw from Stellaris EVK-LM3S1968)
 //!
 //!  Characters are 8 pixels wide (x axis)
-//!		     	and 8 pixels tall (y axis)
+//!                     and 8 pixels tall (y axis)
 //!
 //! \return None.
 //
 //*****************************************************************************
-void
-OLEDStringDraw(char *pcStr, unsigned long ulColumn, unsigned long ulRow)
+void OLEDStringDraw(char *pcStr, unsigned long ulColumn, unsigned long ulRow)
 {
 
-    //-------Use the Orbit Functions:---------
+	//-------Use the Orbit Functions:---------
 
 	int charX = ulColumn;	//Char index in X axis. (character column)
-	int charY = ulRow;		//Char index in Y axis. (character row)
+	int charY = ulRow;	//Char index in Y axis. (character row)
 
-	   //Put the cursor in the right place:
-	    OrbitOledSetCursor(charX, charY);
+	//Put the cursor in the right place:
+	OrbitOledSetCursor(charX, charY);
 
-	    //Print the string:
-	    OrbitOledPutString(pcStr);
+	//Print the string:
+	OrbitOledPutString(pcStr);
 }
-
 
 /*****************************************************************************
  * OLEDInitialise
@@ -79,17 +77,14 @@ OLEDStringDraw(char *pcStr, unsigned long ulColumn, unsigned long ulRow)
  *
  *   	purpose:	Runs the required initialiser routines for the OLED display
  *****************************************************************************/
-void
-OLEDInitialise (void){
+void OLEDInitialise(void)
+{
 
 	/*
 	 * Initialize the OLED
 	 */
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);    //Need signals on GPIOD
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);    //Need signals on GPIOE
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);	//Need signals on GPIOD
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);	//Need signals on GPIOE
 
 	OrbitOledInit();
 }
-
-
-

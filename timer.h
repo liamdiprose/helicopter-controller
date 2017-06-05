@@ -1,3 +1,12 @@
+/*
+ * timer.h
+ * Provides functions for measureing time of program, and time periods. 
+ * Accounts for timer wrap around.
+ *
+ * Authors: Liam Diprose, Aden Durney
+ */
+
+
 #ifndef TIMER_H_
 #define TIMER_H_
 

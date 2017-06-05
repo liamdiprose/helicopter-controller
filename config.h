@@ -1,10 +1,11 @@
-
 /*
  * config.h
  * All Peripheral and pin's defined in one file.
  * See: Assignment Specifications
  *
+ * Authors: Liam Diprose, Aden Durney
  */
+
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
@@ -37,8 +38,6 @@
 #define SWITCH_FMODE_PERIPH SYSCTL_PERIPH_GPIOA
 #define SWITCH_FMODE_BASE GPIO_PORTA_BASE
 #define SWITCH_FMODE_PIN GPIO_PIN_7
-
-
 
 // Main Roter PWM Output
 #define PWM_ALT_PWM_PERIPH SYSCTL_PERIPH_PWM0

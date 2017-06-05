@@ -1,3 +1,11 @@
+/*
+ * button.h
+ * Handle reading of button events, and use in main function
+ *
+ * Authors: Liam Diprose, Aden Durney
+ */
+
+
 #ifndef BUTTON_H_
 #define BUTTON_H_
 
